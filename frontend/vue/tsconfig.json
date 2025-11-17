@@ -1,0 +1,23 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ],
+  "compilerOptions": {
+    "target": "ES2021",
+    // JS version output
+    "lib": [
+      "ES2021",
+      "DOM"
+    ],
+    // include ES2021 APIs
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": true
+  }
+}
