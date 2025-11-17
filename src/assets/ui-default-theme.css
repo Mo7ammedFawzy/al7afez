@@ -1,0 +1,75 @@
+@theme {
+    --color-green-50: oklch(90.98% 0.04338 166.72);
+    --color-green-100: oklch(88.46% 0.05417 166.29);
+    --color-green-200: oklch(83.957% 0.07763 165.13);
+    --color-green-300: oklch(79.343% 0.09927 163.52);
+    --color-green-400: oklch(74.927% 0.11835 162.26);
+    --color-green-500: oklch(70.253% 0.13197 160.37);
+    --color-green-600: oklch(58.426% 0.10793 160.73);
+    --color-green-700: oklch(45.657% 0.08188 161.06);
+    --color-green-800: oklch(32.298% 0.05338 161.83);
+    --color-green-900: oklch(17.276% 0.02184 161.78);
+
+    --color-blue-ribbon-50: #eff4ff;
+    --color-blue-ribbon-100: #dbe6fe;
+    --color-blue-ribbon-200: #bfd3fe;
+    --color-blue-ribbon-300: #93b4fd;
+    --color-blue-ribbon-400: #6090fa;
+    --color-blue-ribbon-500: #3b76f6;
+    --color-blue-ribbon-600: #2563eb;
+    --color-blue-ribbon-700: #1d58d8;
+    --color-blue-ribbon-800: #1e4baf;
+    --color-blue-ribbon-900: #1e408a;
+    --color-blue-ribbon-950: #172a54;
+
+    --color-rose-50: #fdf2f7;
+    --color-rose-100: #fce7f2;
+    --color-rose-200: #fccee5;
+    --color-rose-300: #faa7cf;
+    --color-rose-400: #f55da4;
+    --color-rose-500: #ef458f;
+    --color-rose-600: #de246d;
+    --color-rose-700: #c11553;
+    --color-rose-800: #9f1545;
+    --color-rose-900: #85163d;
+    --color-rose-950: #510620;
+
+    --color-white: #fff;
+    --color-black: #000;
+
+    --spacing-8xl: 100rem;
+
+    --breakpoint-xs: 30rem;
+    --breakpoint-sm: 40rem;
+    --breakpoint-md: 56rem;
+    --breakpoint-lg: 64rem;
+    --breakpoint-xl: 80rem;
+    --breakpoint-2xl: 96rem;
+    --breakpoint-3xl: 120rem;
+}
+
+:root {
+    --ui-primary: var(--color-blue-ribbon-700);
+    --ui-secondary: var(--color-rose-700);
+    --ui-bg-elevated: theme(color.slate.200);
+    --ui-bg-app: white;
+    --ring-color: theme(color.slate.300);
+    --background-light: #fff;
+    --background-dark: #162031;
+    --ui-background: var(--background-light);
+
+    --header-height: theme(spacing.16);
+    --ui-gap: theme(spacing.3);
+    --card-spacing: theme(spacing.5);
+
+    --y-animate: 50vh;
+}
+
+.dark {
+    --ui-bg-elevated: theme(color.gray.800);
+    --ui-primary: var(--color-blue-ribbon-700);
+    --ui-secondary: var(--color-rose-500);
+    --ui-background: var(--background-dark);
+    --ui-bg-app: #162031;
+    --ring-color: theme(color.gray.700);
+}
