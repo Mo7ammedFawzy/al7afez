@@ -2,7 +2,7 @@ import "./assets/main.css";
 
 import {createApp, type App} from "vue";
 import {createPinia} from "pinia"
-import router from "./router/index.ts"
+import router from "./router"
 import uiPlugin from "@nuxt/ui/vue-plugin";
 import MyApp from "./App.vue";
 import BaseWrapper from "@/components/base/BaseWrapper.vue";
