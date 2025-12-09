@@ -8,3 +8,5 @@ Entities
 - BaseEntity(id,code,creationDate)
 - MasterFile(name) extends BaseEntity
 =======Scenario======
+
+===Authorization===
