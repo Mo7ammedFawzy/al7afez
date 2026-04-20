@@ -1,12 +1,13 @@
-package com.al7afez.al7afez.entities;
+package com.al7afez.al7afez.model.entities;
 
+import com.al7afez.al7afez.model.details.RecitationMistakeLine;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
+
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.List;
@@ -27,8 +28,7 @@ public class RecitationDocument extends BaseEntity {
     private String notes;
 
     @OneToMany(mappedBy = "recitationDocument", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("id ASC")
-    private List<RecitationMistake> mistakes = new ArrayList<>();
+    private List<RecitationMistakeLine> mistakes = new ArrayList<>();
 
     public Student getStudent() {
         return student;
@@ -102,11 +102,11 @@ public class RecitationDocument extends BaseEntity {
         this.notes = notes;
     }
 
-    public List<RecitationMistake> getMistakes() {
+    public List<RecitationMistakeLine> getMistakes() {
         return mistakes;
     }
 
-    public void setMistakes(List<RecitationMistake> mistakes) {
+    public void setMistakes(List<RecitationMistakeLine> mistakes) {
         this.mistakes = mistakes;
     }
 }

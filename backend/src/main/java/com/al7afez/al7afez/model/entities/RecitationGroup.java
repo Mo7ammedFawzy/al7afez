@@ -1,4 +1,4 @@
-package com.al7afez.al7afez.entities;
+package com.al7afez.al7afez.model.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
