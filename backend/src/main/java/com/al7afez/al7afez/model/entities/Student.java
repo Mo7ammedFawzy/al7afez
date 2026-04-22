@@ -2,6 +2,7 @@ package com.al7afez.al7afez.model.entities;
 
 import com.al7afez.al7afez.model.Gender;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ public class Student extends MasterFile {
     private String parentPhoneNumber;
     private Gender gender;
     @ManyToOne
+    @JoinColumn(name = "group_id")
     private RecitationGroup recitationGroup;
 
     public LocalDate getBirthDate() {

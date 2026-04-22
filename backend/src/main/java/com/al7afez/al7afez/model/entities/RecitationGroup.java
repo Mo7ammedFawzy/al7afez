@@ -3,10 +3,6 @@ package com.al7afez.al7afez.model.entities;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class RecitationGroup extends MasterFile {
@@ -17,9 +13,6 @@ public class RecitationGroup extends MasterFile {
     @ManyToOne
     @JoinColumn(name = "sheikh_id")
     private Sheikh sheikh;
-
-    @OneToMany(mappedBy = "recitationGroup")
-    private List<Student> students = new ArrayList<>();
 
     public Level getLevel() {
         return level;
@@ -35,13 +28,5 @@ public class RecitationGroup extends MasterFile {
 
     public void setSheikh(Sheikh sheikh) {
         this.sheikh = sheikh;
-    }
-
-    public List<Student> getStudents() {
-        return students;
-    }
-
-    public void setStudents(List<Student> students) {
-        this.students = students;
     }
 }

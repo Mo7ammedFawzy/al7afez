@@ -11,10 +11,7 @@ import com.al7afez.al7afez.repositories.LevelRepository;
 import com.al7afez.al7afez.repositories.SheikhRepository;
 import com.al7afez.al7afez.repositories.StudentRepository;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,30 +45,26 @@ public class GroupService {
 
     public Page<GroupResponse> getAll(Pageable pageable) {
         return groupRepository.findAllWithDetails(pageable)
-                .map(group -> mappingService.toGroupResponse(group, studentRepository.findByRecitationGroupIdOrderByNameAsc(group.getId())));
+                .map(mappingService::toGroupResponse);
     }
 
     public GroupResponse getById(Long id) {
         RecitationGroup group = groupRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group not found"));
-        return mappingService.toGroupResponse(group, studentRepository.findByRecitationGroupIdOrderByNameAsc(id));
+        return mappingService.toGroupResponse(group);
     }
 
     public GroupResponse create(GroupRequest request) {
         RecitationGroup group = new RecitationGroup();
         apply(group, request);
-        RecitationGroup saved = groupRepository.save(group);
-        syncStudents(saved, request.studentIds());
-        return getById(saved.getId());
+        return mappingService.toGroupResponse(groupRepository.save(group));
     }
 
     public GroupResponse update(Long id, GroupRequest request) {
         RecitationGroup group = groupRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group not found"));
         apply(group, request);
-        RecitationGroup saved = groupRepository.save(group);
-        syncStudents(saved, request.studentIds());
-        return getById(saved.getId());
+        return mappingService.toGroupResponse(groupRepository.save(group));
     }
 
     public void delete(Long id) {
@@ -91,34 +84,6 @@ public class GroupService {
         group.setCode(normalize(request.code()));
         group.setLevel(resolveLevel(request.levelId()));
         group.setSheikh(resolveSheikh(request.sheikhId()));
-    }
-
-    private void syncStudents(RecitationGroup group, List<Long> studentIds) {
-        Set<Long> requestedIds = studentIds == null ? Set.of() : new HashSet<>(studentIds);
-        List<Student> currentStudents = studentRepository.findByRecitationGroupIdOrderByNameAsc(group.getId());
-        List<Student> changedStudents = new ArrayList<>();
-
-        for (Student student : currentStudents) {
-            if (!requestedIds.contains(student.getId())) {
-                student.setRecitationGroup(null);
-                changedStudents.add(student);
-            }
-        }
-
-        if (!requestedIds.isEmpty()) {
-            List<Student> selectedStudents = studentRepository.findAllById(requestedIds);
-            if (selectedStudents.size() != requestedIds.size()) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more selected students were not found");
-            }
-            for (Student student : selectedStudents) {
-                student.setRecitationGroup(group);
-                changedStudents.add(student);
-            }
-        }
-
-        if (!changedStudents.isEmpty()) {
-            studentRepository.saveAll(changedStudents);
-        }
     }
 
     private Level resolveLevel(Long id) {

@@ -13,7 +13,6 @@ import com.al7afez.al7afez.model.details.RecitationMistakeLine;
 import com.al7afez.al7afez.model.entities.Sheikh;
 import com.al7afez.al7afez.model.entities.Student;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,19 +43,13 @@ public class MappingService {
         );
     }
 
-    public GroupResponse toGroupResponse(RecitationGroup group, List<Student> students) {
-        List<EntityReference> studentsRefs = students.stream()
-                .map(this::toEntityReferenceData)
-                .toList();
-
+    public GroupResponse toGroupResponse(RecitationGroup group) {
         return new GroupResponse(
                 group.getId(),
                 group.getCode(),
                 group.getName(),
                 toEntityReferenceData(group.getLevel()),
-                toEntityReferenceData(group.getSheikh()),
-                studentsRefs,
-                studentsRefs.size()
+                toEntityReferenceData(group.getSheikh())
         );
     }
 
