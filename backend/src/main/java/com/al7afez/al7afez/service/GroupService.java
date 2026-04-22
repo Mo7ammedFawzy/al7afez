@@ -12,6 +12,7 @@ import com.al7afez.al7afez.repositories.SheikhRepository;
 import com.al7afez.al7afez.repositories.StudentRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -71,8 +72,13 @@ public class GroupService {
         RecitationGroup group = groupRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group not found"));
         List<Student> students = studentRepository.findByRecitationGroupIdOrderByNameAsc(id);
-        students.forEach(student -> student.setRecitationGroup(null));
-        studentRepository.saveAll(students);
+        if (!students.isEmpty()) {
+            String codes = students.stream()
+                    .map(s -> s.getCode() != null ? s.getCode() : s.getName())
+                    .collect(Collectors.joining(", "));
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Cannot delete group: it is referenced by the following students: " + codes);
+        }
         groupRepository.delete(group);
     }
 
