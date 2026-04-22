@@ -10,9 +10,11 @@ import LevelsView from "./views/LevelsView.vue";
 import GroupsView from "./views/GroupsView.vue";
 import MistakeTypesView from "./views/MistakeTypesView.vue";
 import RecitationDocumentsView from "./views/RecitationDocumentsView.vue";
+import ReportsView from "./views/ReportsView.vue";
 
 const routes = [
-  { path: "/", redirect: "/students" },
+  { path: "/", redirect: "/reports" },
+  { path: "/reports", component: ReportsView },
   { path: "/students", component: StudentsView },
   { path: "/sheikhs", component: SheikhsView },
   { path: "/levels", component: LevelsView },

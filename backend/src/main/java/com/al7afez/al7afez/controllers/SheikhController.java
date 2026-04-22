@@ -1,7 +1,8 @@
 package com.al7afez.al7afez.controllers;
 
-import com.al7afez.al7afez.entities.Sheikh;
-import com.al7afez.al7afez.repositories.SheikhRepository;
+import com.al7afez.al7afez.dto.SheikhRequest;
+import com.al7afez.al7afez.model.entities.Sheikh;
+import com.al7afez.al7afez.service.SheikhService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -19,46 +20,35 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/sheikhs")
 public class SheikhController {
-    private final SheikhRepository repository;
+    private final SheikhService service;
 
-    public SheikhController(SheikhRepository repository) {
-        this.repository = repository;
+    public SheikhController(SheikhService service) {
+        this.service = service;
     }
 
     @GetMapping
     public Page<Sheikh> getAll(@PageableDefault(size = 10) Pageable pageable) {
-        return repository.findAll(pageable);
+        return service.getAll(pageable);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Sheikh> getById(@PathVariable Long id) {
-        return repository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(service.getById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Sheikh> create(@RequestBody Sheikh sheikh) {
-        Sheikh saved = repository.save(sheikh);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    public ResponseEntity<Sheikh> create(@RequestBody SheikhRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Sheikh> update(@PathVariable Long id, @RequestBody Sheikh sheikh) {
-        if (!repository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        sheikh.setId(id);
-        Sheikh saved = repository.save(sheikh);
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<Sheikh> update(@PathVariable Long id, @RequestBody SheikhRequest request) {
+        return ResponseEntity.ok(service.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (!repository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        repository.deleteById(id);
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

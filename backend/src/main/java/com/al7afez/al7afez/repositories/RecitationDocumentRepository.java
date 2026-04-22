@@ -1,6 +1,6 @@
 package com.al7afez.al7afez.repositories;
 
-import com.al7afez.al7afez.entities.RecitationDocument;
+import com.al7afez.al7afez.model.entities.RecitationDocument;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;

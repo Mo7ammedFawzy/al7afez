@@ -1,6 +1,6 @@
 package com.al7afez.al7afez.repositories;
 
-import com.al7afez.al7afez.entities.Student;
+import com.al7afez.al7afez.model.entities.Student;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;

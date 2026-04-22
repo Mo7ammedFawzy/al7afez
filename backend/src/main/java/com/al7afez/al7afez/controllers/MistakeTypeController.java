@@ -1,7 +1,8 @@
 package com.al7afez.al7afez.controllers;
 
-import com.al7afez.al7afez.entities.MistakeType;
-import com.al7afez.al7afez.repositories.MistakeTypeRepository;
+import com.al7afez.al7afez.dto.MistakeTypeRequest;
+import com.al7afez.al7afez.dto.MistakeTypeResponse;
+import com.al7afez.al7afez.service.MistakeTypeService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -19,46 +20,35 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/mistake-types")
 public class MistakeTypeController {
-    private final MistakeTypeRepository repository;
+    private final MistakeTypeService service;
 
-    public MistakeTypeController(MistakeTypeRepository repository) {
-        this.repository = repository;
+    public MistakeTypeController(MistakeTypeService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public Page<MistakeType> getAll(@PageableDefault(size = 10) Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<MistakeTypeResponse> getAll(@PageableDefault(size = 10) Pageable pageable) {
+        return service.getAll(pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MistakeType> getById(@PathVariable Long id) {
-        return repository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<MistakeTypeResponse> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getById(id));
     }
 
     @PostMapping
-    public ResponseEntity<MistakeType> create(@RequestBody MistakeType mistakeType) {
-        MistakeType saved = repository.save(mistakeType);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    public ResponseEntity<MistakeTypeResponse> create(@RequestBody MistakeTypeRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MistakeType> update(@PathVariable Long id, @RequestBody MistakeType mistakeType) {
-        if (!repository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        mistakeType.setId(id);
-        MistakeType saved = repository.save(mistakeType);
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<MistakeTypeResponse> update(@PathVariable Long id, @RequestBody MistakeTypeRequest request) {
+        return ResponseEntity.ok(service.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (!repository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        repository.deleteById(id);
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

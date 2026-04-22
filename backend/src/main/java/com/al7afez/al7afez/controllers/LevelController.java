@@ -1,7 +1,8 @@
 package com.al7afez.al7afez.controllers;
 
-import com.al7afez.al7afez.entities.Level;
-import com.al7afez.al7afez.repositories.LevelRepository;
+import com.al7afez.al7afez.dto.LevelRequest;
+import com.al7afez.al7afez.model.entities.Level;
+import com.al7afez.al7afez.service.LevelService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -19,46 +20,35 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/levels")
 public class LevelController {
-    private final LevelRepository repository;
+    private final LevelService service;
 
-    public LevelController(LevelRepository repository) {
-        this.repository = repository;
+    public LevelController(LevelService service) {
+        this.service = service;
     }
 
     @GetMapping
     public Page<Level> getAll(@PageableDefault(size = 10) Pageable pageable) {
-        return repository.findAll(pageable);
+        return service.getAll(pageable);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Level> getById(@PathVariable Long id) {
-        return repository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(service.getById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Level> create(@RequestBody Level level) {
-        Level saved = repository.save(level);
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+    public ResponseEntity<Level> create(@RequestBody LevelRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Level> update(@PathVariable Long id, @RequestBody Level level) {
-        if (!repository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        level.setId(id);
-        Level saved = repository.save(level);
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<Level> update(@PathVariable Long id, @RequestBody LevelRequest request) {
+        return ResponseEntity.ok(service.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        if (!repository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        repository.deleteById(id);
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
