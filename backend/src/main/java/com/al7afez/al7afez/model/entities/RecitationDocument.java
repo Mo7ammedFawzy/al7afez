@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-public class RecitationDocument extends BaseEntity {
+public class RecitationDocument extends DocumentFile {
     @ManyToOne
     @JoinColumn(name = "student_id")
     private Student student;

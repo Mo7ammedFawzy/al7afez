@@ -6,7 +6,9 @@ import com.al7afez.al7afez.model.entities.RecitationGroup;
 import com.al7afez.al7afez.model.entities.Student;
 import com.al7afez.al7afez.repositories.GroupRepository;
 import com.al7afez.al7afez.repositories.StudentRepository;
+
 import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
-public class StudentService {
+public class StudentService extends AbsMasterFileService<Student> {
     private final StudentRepository studentRepository;
     private final GroupRepository groupRepository;
     private final MappingService mappingService;
@@ -38,28 +40,26 @@ public class StudentService {
     public StudentResponse create(StudentRequest request) {
         Student student = new Student();
         apply(student, request);
-        return mappingService.toStudentResponse(studentRepository.save(student));
+        Student saved = save(student, studentRepository);
+        return mappingService.toStudentResponse(saved);
     }
 
     public StudentResponse update(Long id, StudentRequest request) {
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
         apply(student, request);
-        return mappingService.toStudentResponse(studentRepository.save(student));
+        Student saved = save(student, studentRepository);
+        return mappingService.toStudentResponse(saved);
     }
 
     public void delete(Long id) {
-        if (!studentRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found");
-        }
-        studentRepository.deleteById(id);
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
+        isValidForDelete(student);
+        studentRepository.delete(student);
     }
 
     private void apply(Student student, StudentRequest request) {
-        if (request == null || request.name() == null || request.name().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Student name is required");
-        }
-
         student.setName(request.name().trim());
         student.setCode(normalize(request.code()));
         student.setBirthDate(request.birthDate());
@@ -74,13 +74,5 @@ public class StudentService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Selected group was not found");
         }
         student.setRecitationGroup(recitationGroup.orElse(null));
-    }
-
-    private String normalize(String value) {
-        if (value == null) {
-            return null;
-        }
-        String trimmed = value.trim();
-        return trimmed.isEmpty() ? null : trimmed;
     }
 }

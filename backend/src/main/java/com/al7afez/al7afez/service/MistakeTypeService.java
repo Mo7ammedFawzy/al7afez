@@ -11,13 +11,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
-public class MistakeTypeService {
+public class MistakeTypeService extends AbsMasterFileService<MistakeType> {
     private final MistakeTypeRepository repository;
     private final MappingService mappingService;
 
     public MistakeTypeService(MistakeTypeRepository repository, MappingService mappingService) {
         this.repository = repository;
         this.mappingService = mappingService;
+    }
+
+
+    @Override
+    protected void isValidForDelete(MistakeType entity) {
+        if (repository.existsByParentId(entity.getId())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Delete or reassign child mistake types first");
+        }
     }
 
     public Page<MistakeTypeResponse> getAll(Pageable pageable) {
@@ -32,43 +40,34 @@ public class MistakeTypeService {
 
     public MistakeTypeResponse create(MistakeTypeRequest request) {
         MistakeType mistakeType = new MistakeType();
-        apply(mistakeType, request, null);
-        return toResponse(repository.save(mistakeType));
+        apply(mistakeType, request);
+        MistakeType saved = save(mistakeType, repository);
+        return toResponse(saved);
     }
 
     public MistakeTypeResponse update(Long id, MistakeTypeRequest request) {
         MistakeType mistakeType = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Mistake type not found"));
-        apply(mistakeType, request, id);
-        return toResponse(repository.save(mistakeType));
+        apply(mistakeType, request);
+        MistakeType saved = save(mistakeType, repository);
+        return toResponse(saved);
     }
 
     public void delete(Long id) {
         MistakeType mistakeType = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Mistake type not found"));
-        if (repository.existsByParentId(id)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Delete or reassign child mistake types first");
-        }
+        isValidForDelete(mistakeType);
         repository.delete(mistakeType);
     }
 
-    private void apply(MistakeType mistakeType, MistakeTypeRequest request, Long currentId) {
-        if (request == null || request.name() == null || request.name().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mistake type name is required");
-        }
-
+    private void apply(MistakeType mistakeType, MistakeTypeRequest request) {
         mistakeType.setName(request.name().trim());
         mistakeType.setCode(normalize(request.code()));
-        mistakeType.setParent(resolveParent(request.parentId(), currentId));
+        mistakeType.setParent(resolveParent(request.parentId()));
     }
 
-    private MistakeType resolveParent(Long parentId, Long currentId) {
-        if (parentId == null) {
-            return null;
-        }
-        if (currentId != null && currentId.equals(parentId)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "A mistake type cannot be its own parent");
-        }
+    private MistakeType resolveParent(Long parentId) {
+        if (parentId == null) return null;
         return repository.findById(parentId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Selected parent type was not found"));
     }
@@ -80,13 +79,5 @@ public class MistakeTypeService {
                 mistakeType.getName(),
                 mappingService.toEntityReferenceData(mistakeType.getParent())
         );
-    }
-
-    private String normalize(String value) {
-        if (value == null) {
-            return null;
-        }
-        String trimmed = value.trim();
-        return trimmed.isEmpty() ? null : trimmed;
     }
 }

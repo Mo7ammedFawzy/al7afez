@@ -23,7 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @Transactional
-public class RecitationService {
+public class RecitationService extends AbsDocumentFileService<RecitationDocument> {
     private final RecitationDocumentRepository recitationRepository;
     private final StudentRepository studentRepository;
     private final MistakeTypeRepository mistakeTypeRepository;
@@ -54,21 +54,23 @@ public class RecitationService {
     public RecitationResponse create(RecitationRequest request) {
         RecitationDocument recitation = new RecitationDocument();
         apply(recitation, request);
-        return mappingService.toRecitationResponse(recitationRepository.save(recitation));
+        RecitationDocument saved = save(recitation, recitationRepository);
+        return mappingService.toRecitationResponse(saved);
     }
 
     public RecitationResponse update(Long id, RecitationRequest request) {
         RecitationDocument recitation = recitationRepository.findByIdDetailed(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recitation not found"));
         apply(recitation, request);
-        return mappingService.toRecitationResponse(recitationRepository.save(recitation));
+        RecitationDocument saved = save(recitation, recitationRepository);
+        return mappingService.toRecitationResponse(saved);
     }
 
     public void delete(Long id) {
-        if (!recitationRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Recitation not found");
-        }
-        recitationRepository.deleteById(id);
+        RecitationDocument recitation = recitationRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recitation not found"));
+        isValidForDelete(recitation);
+        recitationRepository.delete(recitation);
     }
 
     public List<RecitationResponse> getRecent(int limit) {
@@ -78,10 +80,6 @@ public class RecitationService {
     }
 
     private void apply(RecitationDocument recitation, RecitationRequest request) {
-        if (request == null || request.studentId() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Student is required");
-        }
-
         Student student = studentRepository.findByIdWithGroup(request.studentId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Selected student was not found"));
 
@@ -122,13 +120,5 @@ public class RecitationService {
         }
 
         return mistakes.stream().filter(Objects::nonNull).toList();
-    }
-
-    private String normalize(String value) {
-        if (value == null) {
-            return null;
-        }
-        String trimmed = value.trim();
-        return trimmed.isEmpty() ? null : trimmed;
     }
 }

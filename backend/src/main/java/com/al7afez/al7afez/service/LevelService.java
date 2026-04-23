@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
-public class LevelService {
+public class LevelService extends AbsMasterFileService<Level> {
     private final LevelRepository repository;
 
     public LevelService(LevelRepository repository) {
@@ -29,27 +29,24 @@ public class LevelService {
     public Level create(LevelRequest request) {
         Level level = new Level();
         apply(level, request);
-        return repository.save(level);
+        return save(level, repository);
     }
 
     public Level update(Long id, LevelRequest request) {
         Level level = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Level not found"));
         apply(level, request);
-        return repository.save(level);
+        return save(level, repository);
     }
 
     public void delete(Long id) {
-        if (!repository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Level not found");
-        }
-        repository.deleteById(id);
+        Level level = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Level not found"));
+        isValidForDelete(level);
+        repository.delete(level);
     }
 
     private void apply(Level level, LevelRequest request) {
-        if (request == null || request.name() == null || request.name().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Level name is required");
-        }
         level.setName(request.name().trim());
         level.setCode(normalize(request.code()));
         level.setFromSurah(request.fromSurah());
@@ -57,13 +54,5 @@ public class LevelService {
         level.setFromAya(request.fromAya());
         level.setToAya(request.toAya());
         level.setNumberOfAyatPerSession(request.numberOfAyatPerSession());
-    }
-
-    private String normalize(String value) {
-        if (value == null) {
-            return null;
-        }
-        String trimmed = value.trim();
-        return trimmed.isEmpty() ? null : trimmed;
     }
 }

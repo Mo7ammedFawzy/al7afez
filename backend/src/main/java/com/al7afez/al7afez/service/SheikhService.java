@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
-public class SheikhService {
+public class SheikhService extends AbsMasterFileService<Sheikh> {
     private final SheikhRepository repository;
 
     public SheikhService(SheikhRepository repository) {
@@ -29,39 +29,28 @@ public class SheikhService {
     public Sheikh create(SheikhRequest request) {
         Sheikh sheikh = new Sheikh();
         apply(sheikh, request);
-        return repository.save(sheikh);
+        return save(sheikh, repository);
     }
 
     public Sheikh update(Long id, SheikhRequest request) {
         Sheikh sheikh = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sheikh not found"));
         apply(sheikh, request);
-        return repository.save(sheikh);
+        return save(sheikh, repository);
     }
 
     public void delete(Long id) {
-        if (!repository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Sheikh not found");
-        }
-        repository.deleteById(id);
+        Sheikh sheikh = repository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sheikh not found"));
+        isValidForDelete(sheikh);
+        repository.delete(sheikh);
     }
 
     private void apply(Sheikh sheikh, SheikhRequest request) {
-        if (request == null || request.name() == null || request.name().isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sheikh name is required");
-        }
         sheikh.setName(request.name().trim());
         sheikh.setCode(normalize(request.code()));
         sheikh.setBirthDate(request.birthDate());
         sheikh.setPhoneNumber(normalize(request.phoneNumber()));
         sheikh.setGender(request.gender());
-    }
-
-    private String normalize(String value) {
-        if (value == null) {
-            return null;
-        }
-        String trimmed = value.trim();
-        return trimmed.isEmpty() ? null : trimmed;
     }
 }
