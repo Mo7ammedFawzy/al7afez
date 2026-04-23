@@ -12,9 +12,11 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class LevelService extends AbsMasterFileService<Level> {
     private final LevelRepository repository;
+    private final MappingService mappingService;
 
-    public LevelService(LevelRepository repository) {
+    public LevelService(LevelRepository repository, MappingService mappingService) {
         this.repository = repository;
+        this.mappingService = mappingService;
     }
 
     public Page<Level> getAll(Pageable pageable) {
@@ -28,14 +30,14 @@ public class LevelService extends AbsMasterFileService<Level> {
 
     public Level create(LevelRequest request) {
         Level level = new Level();
-        apply(level, request);
+        mappingService.toLevel(level, request);
         return save(level, repository);
     }
 
     public Level update(Long id, LevelRequest request) {
         Level level = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Level not found"));
-        apply(level, request);
+        mappingService.toLevel(level, request);
         return save(level, repository);
     }
 
@@ -44,15 +46,5 @@ public class LevelService extends AbsMasterFileService<Level> {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Level not found"));
         isValidForDelete(level);
         repository.delete(level);
-    }
-
-    private void apply(Level level, LevelRequest request) {
-        level.setName(request.name().trim());
-        level.setCode(normalize(request.code()));
-        level.setFromSurah(request.fromSurah());
-        level.setToSurah(request.toSurah());
-        level.setFromAya(request.fromAya());
-        level.setToAya(request.toAya());
-        level.setNumberOfAyatPerSession(request.numberOfAyatPerSession());
     }
 }

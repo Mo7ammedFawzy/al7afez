@@ -12,9 +12,11 @@ import org.springframework.web.server.ResponseStatusException;
 @Service
 public class SheikhService extends AbsMasterFileService<Sheikh> {
     private final SheikhRepository repository;
+    private final MappingService mappingService;
 
-    public SheikhService(SheikhRepository repository) {
+    public SheikhService(SheikhRepository repository, MappingService mappingService) {
         this.repository = repository;
+        this.mappingService = mappingService;
     }
 
     public Page<Sheikh> getAll(Pageable pageable) {
@@ -28,14 +30,14 @@ public class SheikhService extends AbsMasterFileService<Sheikh> {
 
     public Sheikh create(SheikhRequest request) {
         Sheikh sheikh = new Sheikh();
-        apply(sheikh, request);
+        mappingService.toSheikh(sheikh, request);
         return save(sheikh, repository);
     }
 
     public Sheikh update(Long id, SheikhRequest request) {
         Sheikh sheikh = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sheikh not found"));
-        apply(sheikh, request);
+        mappingService.toSheikh(sheikh, request);
         return save(sheikh, repository);
     }
 
@@ -44,13 +46,5 @@ public class SheikhService extends AbsMasterFileService<Sheikh> {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Sheikh not found"));
         isValidForDelete(sheikh);
         repository.delete(sheikh);
-    }
-
-    private void apply(Sheikh sheikh, SheikhRequest request) {
-        sheikh.setName(request.name().trim());
-        sheikh.setCode(normalize(request.code()));
-        sheikh.setBirthDate(request.birthDate());
-        sheikh.setPhoneNumber(normalize(request.phoneNumber()));
-        sheikh.setGender(request.gender());
     }
 }

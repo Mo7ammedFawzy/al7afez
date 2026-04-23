@@ -40,7 +40,7 @@ public class MistakeTypeService extends AbsMasterFileService<MistakeType> {
 
     public MistakeTypeResponse create(MistakeTypeRequest request) {
         MistakeType mistakeType = new MistakeType();
-        apply(mistakeType, request);
+        mappingService.toMistakeType(mistakeType, request);
         MistakeType saved = save(mistakeType, repository);
         return toResponse(saved);
     }
@@ -48,7 +48,7 @@ public class MistakeTypeService extends AbsMasterFileService<MistakeType> {
     public MistakeTypeResponse update(Long id, MistakeTypeRequest request) {
         MistakeType mistakeType = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Mistake type not found"));
-        apply(mistakeType, request);
+        mappingService.toMistakeType(mistakeType, request);
         MistakeType saved = save(mistakeType, repository);
         return toResponse(saved);
     }
@@ -58,18 +58,6 @@ public class MistakeTypeService extends AbsMasterFileService<MistakeType> {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Mistake type not found"));
         isValidForDelete(mistakeType);
         repository.delete(mistakeType);
-    }
-
-    private void apply(MistakeType mistakeType, MistakeTypeRequest request) {
-        mistakeType.setName(request.name().trim());
-        mistakeType.setCode(normalize(request.code()));
-        mistakeType.setParent(resolveParent(request.parentId()));
-    }
-
-    private MistakeType resolveParent(Long parentId) {
-        if (parentId == null) return null;
-        return repository.findById(parentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Selected parent type was not found"));
     }
 
     private MistakeTypeResponse toResponse(MistakeType mistakeType) {
