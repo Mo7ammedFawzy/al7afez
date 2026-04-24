@@ -5,83 +5,38 @@
     <div v-if="error" class="notice">{{ error }}</div>
   </section>
 
-  <section class="card">
-    <h2>{{ form.id ? $t("sheikhs.edit") : $t("sheikhs.new") }}</h2>
-    <form class="grid grid-2" @submit.prevent="submit">
-      <div>
-        <label>{{ $t("sheikhs.name") }}</label>
-        <input v-model="form.name" required />
-      </div>
-      <div>
-        <label>{{ $t("sheikhs.code") }}</label>
-        <input v-model="form.code" />
-      </div>
-      <div>
-        <label>{{ $t("sheikhs.birthDate") }}</label>
-        <input v-model="form.birthDate" type="date" />
-      </div>
-      <div>
-        <label>{{ $t("sheikhs.gender") }}</label>
-        <select v-model="form.gender">
-          <option value="MALE">{{ $t("common.male") }}</option>
-          <option value="FEMALE">{{ $t("common.female") }}</option>
-        </select>
-      </div>
-      <div>
-        <label>{{ $t("sheikhs.phone") }}</label>
-        <input v-model="form.phoneNumber" />
-      </div>
-      <div class="button-row">
-        <button class="primary" type="submit">{{ form.id ? $t("common.save") : $t("common.create") }}</button>
-        <button class="secondary" type="button" @click="reset">{{ $t("common.clear") }}</button>
-      </div>
-    </form>
-  </section>
+  <SheikhsForm
+    v-if="showForm"
+    :form="form"
+    @submit="submit"
+    @cancel="cancelEdit"
+    @list="showListView"
+  />
 
-  <section class="card">
-    <h2>{{ $t("sheikhs.list") }}</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>{{ $t("sheikhs.name") }}</th>
-          <th>{{ $t("sheikhs.gender") }}</th>
-          <th>{{ $t("sheikhs.phone") }}</th>
-          <th>{{ $t("sheikhs.birthDate") }}</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="sheikh in items" :key="sheikh.id">
-          <td>{{ sheikh.name }}</td>
-          <td>{{ sheikh.gender === "MALE" ? $t("common.male") : $t("common.female") }}</td>
-          <td>{{ sheikh.phoneNumber }}</td>
-          <td>{{ sheikh.birthDate }}</td>
-          <td>
-            <div class="button-row">
-              <button class="secondary" type="button" @click="edit(sheikh)">{{ $t("common.edit") }}</button>
-              <button class="danger" type="button" @click="remove(sheikh)">{{ $t("common.delete") }}</button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="pager">
-      <span>{{ page + 1 }} / {{ totalPages || 1 }}</span>
-      <button class="secondary" type="button" :disabled="page === 0" @click="changePage(-1)">{{ $t("common.prev") }}</button>
-      <button class="secondary" type="button" :disabled="page + 1 >= totalPages" @click="changePage(1)">{{ $t("common.next") }}</button>
-    </div>
-  </section>
+  <SheikhsList
+    v-else
+    :items="items"
+    :page="page"
+    :totalPages="totalPages"
+    @new="newSheikh"
+    @edit="edit"
+    @remove="remove"
+    @changePage="changePage"
+  />
 </template>
 
 <script setup>
 import { onMounted, ref } from "vue";
 import { apiDelete, apiGet, apiPost, apiPut } from "../services/api";
+import SheikhsForm from "../components/SheikhsForm.vue";
+import SheikhsList from "../components/SheikhsList.vue";
 
 const items = ref([]);
 const error = ref("");
 const form = ref(emptyForm());
 const page = ref(0);
 const totalPages = ref(1);
+const showForm = ref(false);
 const pageSize = 10;
 
 function emptyForm() {
@@ -106,6 +61,11 @@ async function load() {
   }
 }
 
+function newSheikh() {
+  form.value = emptyForm();
+  showForm.value = true;
+}
+
 function edit(sheikh) {
   form.value = {
     id: sheikh.id,
@@ -115,10 +75,17 @@ function edit(sheikh) {
     phoneNumber: sheikh.phoneNumber || "",
     gender: sheikh.gender || "MALE"
   };
+  showForm.value = true;
 }
 
-function reset() {
+function cancelEdit() {
   form.value = emptyForm();
+  showForm.value = false;
+}
+
+function showListView() {
+  form.value = emptyForm();
+  showForm.value = false;
 }
 
 function buildPayload() {
@@ -141,7 +108,8 @@ async function submit() {
       await apiPost("/sheikhs", payload);
       page.value = 0;
     }
-    await load();
+    form.value = emptyForm();
+    showForm.value = true;
   } catch (err) {
     error.value = err.message;
   }

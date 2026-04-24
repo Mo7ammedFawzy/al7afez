@@ -26,7 +26,10 @@
     "select": "Select",
     "mistakes": "Mistakes",
     "prev": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "new": "New",
+    "cancel": "Cancel",
+    "list": "List"
   },
   "students": {
     "title": "Students",

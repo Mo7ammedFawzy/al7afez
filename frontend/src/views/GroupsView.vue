@@ -5,78 +5,33 @@
     <div v-if="error" class="notice">{{ error }}</div>
   </section>
 
-  <section class="card">
-    <h2>{{ form.id ? $t("groups.edit") : $t("groups.new") }}</h2>
-    <form class="grid grid-2" @submit.prevent="submit">
-      <div>
-        <label>{{ $t("groups.name") }}</label>
-        <input v-model="form.name" required />
-      </div>
-      <div>
-        <label>{{ $t("groups.code") }}</label>
-        <input v-model="form.code" />
-      </div>
-      <div>
-        <label>{{ $t("groups.level") }}</label>
-        <select v-model="form.levelId">
-          <option value="">{{ $t("groups.selectLevel") }}</option>
-          <option v-for="level in levels" :key="level.id" :value="level.id">
-            {{ level.name }}
-          </option>
-        </select>
-      </div>
-      <div>
-        <label>{{ $t("groups.sheikh") }}</label>
-        <select v-model="form.sheikhId">
-          <option value="">{{ $t("groups.selectSheikh") }}</option>
-          <option v-for="sheikh in sheikhs" :key="sheikh.id" :value="sheikh.id">
-            {{ sheikh.name }}
-          </option>
-        </select>
-      </div>
-      <div class="button-row">
-        <button class="primary" type="submit">{{ form.id ? $t("common.save") : $t("common.create") }}</button>
-        <button class="secondary" type="button" @click="reset">{{ $t("common.clear") }}</button>
-      </div>
-    </form>
-  </section>
+  <GroupsForm 
+    v-if="showForm"
+    :form="form"
+    :levels="levels"
+    :sheikhs="sheikhs"
+    @submit="submit"
+    @cancel="cancelEdit"
+    @list="showListView"
+  />
 
-  <section class="card">
-    <h2>{{ $t("groups.list") }}</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>{{ $t("groups.name") }}</th>
-          <th>{{ $t("groups.level") }}</th>
-          <th>{{ $t("groups.sheikh") }}</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="group in items" :key="group.id">
-          <td>{{ group.name }}</td>
-          <td>{{ group.level?.name || "" }}</td>
-          <td>{{ group.sheikh?.name || "" }}</td>
-          <td>
-            <div class="button-row">
-              <button class="secondary" type="button" @click="edit(group)">{{ $t("common.edit") }}</button>
-              <button class="danger" type="button" @click="remove(group)">{{ $t("common.delete") }}</button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="pager">
-      <span>{{ page + 1 }} / {{ totalPages || 1 }}</span>
-      <button class="secondary" type="button" :disabled="page === 0" @click="changePage(-1)">{{ $t("common.prev") }}</button>
-      <button class="secondary" type="button" :disabled="page + 1 >= totalPages" @click="changePage(1)">{{ $t("common.next") }}</button>
-    </div>
-  </section>
+  <GroupsList 
+    v-else
+    :items="items" 
+    :totalPages="totalPages" 
+    :page="page"
+    @new="newGroup"
+    @edit="edit"
+    @remove="remove"
+    @changePage="changePage"
+  />
 </template>
 
 <script setup>
 import { onMounted, ref } from "vue";
 import { apiDelete, apiGet, apiPost, apiPut } from "../services/api";
+import GroupsList from "../components/GroupsList.vue";
+import GroupsForm from "../components/GroupsForm.vue";
 
 const items = ref([]);
 const levels = ref([]);
@@ -85,6 +40,7 @@ const error = ref("");
 const form = ref(emptyForm());
 const page = ref(0);
 const totalPages = ref(1);
+const showForm = ref(false);
 const pageSize = 10;
 
 function emptyForm() {
@@ -114,6 +70,11 @@ async function load() {
   }
 }
 
+function newGroup() {
+  form.value = emptyForm();
+  showForm.value = true;
+}
+
 function edit(group) {
   form.value = {
     id: group.id,
@@ -122,21 +83,17 @@ function edit(group) {
     levelId: group.level?.id || "",
     sheikhId: group.sheikh?.id || ""
   };
+  showForm.value = true;
 }
 
-function reset() {
+function cancelEdit() {
   form.value = emptyForm();
 }
 
-function buildPayload() {
-  return {
-    name: form.value.name,
-    code: form.value.code || null,
-    levelId: form.value.levelId ? Number(form.value.levelId) : null,
-    sheikhId: form.value.sheikhId ? Number(form.value.sheikhId) : null
-  };
+function showListView() {
+  form.value = emptyForm();
+  showForm.value = false;
 }
-
 
 async function submit() {
   try {
@@ -148,11 +105,20 @@ async function submit() {
       await apiPost("/groups", payload);
       page.value = 0;
     }
-    reset();
-    await load();
+    form.value = emptyForm();
+    showForm.value = true;
   } catch (err) {
     error.value = err.message;
   }
+}
+
+function buildPayload() {
+  return {
+    name: form.value.name,
+    code: form.value.code || null,
+    levelId: form.value.levelId ? Number(form.value.levelId) : null,
+    sheikhId: form.value.sheikhId ? Number(form.value.sheikhId) : null
+  };
 }
 
 async function remove(group) {
