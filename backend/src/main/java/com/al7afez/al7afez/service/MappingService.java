@@ -1,25 +1,8 @@
 package com.al7afez.al7afez.service;
 
-import com.al7afez.al7afez.dto.EntityReference;
-import com.al7afez.al7afez.dto.GroupRequest;
-import com.al7afez.al7afez.dto.GroupResponse;
-import com.al7afez.al7afez.dto.LevelRequest;
-import com.al7afez.al7afez.dto.MistakeTypeRequest;
-import com.al7afez.al7afez.dto.RecitationMistakeRequest;
-import com.al7afez.al7afez.dto.RecitationMistakeResponse;
-import com.al7afez.al7afez.dto.RecitationRequest;
-import com.al7afez.al7afez.dto.RecitationResponse;
-import com.al7afez.al7afez.dto.SheikhRequest;
-import com.al7afez.al7afez.dto.StudentRequest;
-import com.al7afez.al7afez.dto.StudentResponse;
+import com.al7afez.al7afez.dto.*;
 import com.al7afez.al7afez.model.details.RecitationMistakeLine;
-import com.al7afez.al7afez.model.entities.Level;
-import com.al7afez.al7afez.model.entities.MasterFile;
-import com.al7afez.al7afez.model.entities.MistakeType;
-import com.al7afez.al7afez.model.entities.RecitationDocument;
-import com.al7afez.al7afez.model.entities.RecitationGroup;
-import com.al7afez.al7afez.model.entities.Sheikh;
-import com.al7afez.al7afez.model.entities.Student;
+import com.al7afez.al7afez.model.entities.*;
 import com.al7afez.al7afez.repositories.GroupRepository;
 import com.al7afez.al7afez.repositories.LevelRepository;
 import com.al7afez.al7afez.repositories.MistakeTypeRepository;
@@ -137,6 +120,15 @@ public class MappingService {
         );
     }
 
+    public UserResponse toUserResponse(AppUser user) {
+        return new UserResponse(
+                user.getId(),
+                user.getCode(),
+                user.getName(),
+                user.getUsername(),
+                toEntityReferenceData(user.getSheikh())
+        );
+    }
     // ── Request → Entity ───────────────────────────────────────────────────────
 
     public void toRecitationGroup(RecitationGroup group, GroupRequest request) {
@@ -162,6 +154,13 @@ public class MappingService {
         sheikh.setBirthDate(request.birthDate());
         sheikh.setPhoneNumber(normalize(request.phoneNumber()));
         sheikh.setGender(request.gender());
+    }
+
+    public void toUser(AppUser user, UserRequest request) {
+        user.setName(request.name().trim());
+        user.setCode(normalize(request.code()));
+        user.setUsername(normalize(request.username()));
+        user.setSheikh(resolveSheikh(request.sheikhId()));
     }
 
     public void toLevel(Level level, LevelRequest request) {

@@ -1,4 +1,7 @@
 package com.al7afez.al7afez.model.entities;
 
-public class DocumentFile extends BaseEntity {
+import jakarta.persistence.MappedSuperclass;
+
+@MappedSuperclass
+public abstract class DocumentFile extends BaseEntity {
 }

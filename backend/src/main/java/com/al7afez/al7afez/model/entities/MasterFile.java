@@ -3,7 +3,7 @@ package com.al7afez.al7afez.model.entities;
 import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public class MasterFile extends BaseEntity {
+public abstract class MasterFile extends BaseEntity {
     private String name;
 
     public String getName() {
