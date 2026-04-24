@@ -1,13 +1,10 @@
 <template>
-  <section class="card">
-    <div class="section-header">
-      <div>
-        <h2>{{ $t("mistakeTypes.title") }}</h2>
-        <p class="small-muted">{{ $t("mistakeTypes.subtitle") }}</p>
-      </div>
+  <div v-if="error" class="popup-overlay" @click.self="error.value = ''">
+    <div class="popup-card">
+      <p>{{ error }}</p>
+      <button class="secondary" type="button" @click="error.value = ''">{{ $t("common.cancel") }}</button>
     </div>
-    <div v-if="error" class="notice">{{ error }}</div>
-  </section>
+  </div>
 
   <MistakeTypesForm
     v-if="showForm"

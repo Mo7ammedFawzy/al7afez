@@ -1,9 +1,10 @@
 <template>
-  <section class="card">
-    <h2>{{ $t("recitations.title") }}</h2>
-    <p class="badge">{{ $t("recitations.subtitle") }}</p>
-    <div v-if="error" class="notice">{{ error }}</div>
-  </section>
+  <div v-if="error" class="popup-overlay" @click.self="error.value = ''">
+    <div class="popup-card">
+      <p>{{ error }}</p>
+      <button class="secondary" type="button" @click="error.value = ''">{{ $t("common.cancel") }}</button>
+    </div>
+  </div>
 
   <RecitationDocumentsForm
     v-if="showForm"

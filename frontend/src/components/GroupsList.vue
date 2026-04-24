@@ -1,8 +1,10 @@
 <template>
   <section class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-      <h2 style="margin: 0;">{{ $t("groups.list") }}</h2>
-      <button class="primary" @click="handleNew">{{ $t("common.new") }}</button>
+    <div class="section-header">
+      <div>
+        <h2>{{ $t("groups.list") }}</h2>
+      </div>
+      <button class="primary icon" type="button" @click="handleNew" :title="$t('common.new')" :aria-label="$t('common.new')">＋</button>
     </div>
     <table class="table">
       <thead>
@@ -20,17 +22,17 @@
           <td>{{ group.sheikh?.name || "" }}</td>
           <td>
             <div class="button-row">
-              <button class="secondary" type="button" @click="handleEdit(group)">{{ $t("common.edit") }}</button>
-              <button class="danger" type="button" @click="handleRemove(group)">{{ $t("common.delete") }}</button>
+              <button class="secondary icon" type="button" @click="handleEdit(group)" :title="$t('common.edit')" :aria-label="$t('common.edit')">✏️</button>
+              <button class="danger icon" type="button" @click="handleRemove(group)" :title="$t('common.delete')" :aria-label="$t('common.delete')">🗑️</button>
             </div>
           </td>
         </tr>
       </tbody>
     </table>
     <div class="pager">
+      <button class="secondary icon" type="button" :disabled="page === 0" @click="handlePrevPage" :title="$t('common.prev')" :aria-label="$t('common.prev')">▶</button>
       <span>{{ page + 1 }} / {{ totalPages || 1 }}</span>
-      <button class="secondary" type="button" :disabled="page === 0" @click="handlePrevPage">{{ $t("common.prev") }}</button>
-      <button class="secondary" type="button" :disabled="page + 1 >= totalPages" @click="handleNextPage">{{ $t("common.next") }}</button>
+      <button class="secondary icon" type="button" :disabled="page + 1 >= totalPages" @click="handleNextPage" :title="$t('common.next')" :aria-label="$t('common.next')">◀</button>
     </div>
   </section>
 </template>

@@ -1,6 +1,11 @@
 <template>
   <section class="card">
-    <h2>{{ form.id ? $t("levels.edit") : $t("levels.new") }}</h2>
+    <div class="section-header">
+      <div>
+        <h2>{{ form.id ? $t("levels.edit") : $t("levels.new") }}</h2>
+      </div>
+      <button class="primary icon" type="button" @click="handleCancel" :title="$t('common.list')" :aria-label="$t('common.list')">☰</button>
+    </div>
     <form class="grid grid-2" @submit.prevent="handleSubmit">
       <div>
         <label>{{ $t("levels.name") }}</label>
@@ -33,7 +38,6 @@
       <div class="button-row">
         <button class="primary" type="submit">{{ form.id ? $t("common.save") : $t("common.create") }}</button>
         <button class="secondary" type="button" @click="handleCancel">{{ $t("common.cancel") }}</button>
-        <button class="secondary" type="button" @click="handleList">{{ $t("common.list") }}</button>
       </div>
     </form>
   </section>
@@ -47,7 +51,7 @@ defineProps({
   }
 });
 
-const emit = defineEmits(["submit", "cancel", "list"]);
+const emit = defineEmits(["submit", "cancel"]);
 
 function handleSubmit() {
   emit("submit");
@@ -55,9 +59,5 @@ function handleSubmit() {
 
 function handleCancel() {
   emit("cancel");
-}
-
-function handleList() {
-  emit("list");
 }
 </script>
