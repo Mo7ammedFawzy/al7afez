@@ -84,7 +84,7 @@
 </template>
 
 <script setup>
-defineProps({
+const props = defineProps({
   form: {
     type: Object,
     required: true
@@ -98,6 +98,8 @@ defineProps({
     default: () => []
   }
 });
+
+const { form } = props;
 
 const emit = defineEmits(["submit", "cancel", "list"]);
 
