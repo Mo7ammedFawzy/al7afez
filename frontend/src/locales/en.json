@@ -1,4 +1,11 @@
 {
+  "login": {
+    "username": "Username",
+    "password": "Password",
+    "submit": "Sign In",
+    "loggingIn": "Signing in...",
+    "logout": "Sign Out"
+  },
   "app": {
     "tagline": "Track recitations, log mistakes, and analyze performance across students, groups, and levels."
   },
@@ -9,7 +16,8 @@
     "levels": "Levels",
     "groups": "Groups",
     "mistakeTypes": "Mistake Types",
-    "recitations": "Recitation Documents"
+    "recitations": "Recitation Documents",
+    "users": "Users"
   },
   "badge": {
     "master": "MasterFile",
@@ -132,6 +140,21 @@
     "mistakeNote": "Short note",
     "count": "Count",
     "totalMistakes": "Total Mistakes"
+  },
+  "users": {
+    "title": "Users",
+    "subtitle": "Manage user accounts and sheikh assignments",
+    "new": "New User",
+    "edit": "Edit User",
+    "list": "User List",
+    "name": "Name",
+    "code": "Code",
+    "username": "Username",
+    "password": "Password",
+    "newPassword": "New Password",
+    "changePassword": "Change Password",
+    "sheikh": "Sheikh",
+    "selectSheikh": "Select sheikh"
   },
   "reports": {
     "title": "Mistake Analytics",

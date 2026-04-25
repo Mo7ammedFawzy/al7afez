@@ -11,8 +11,11 @@ import GroupsView from "./views/GroupsView.vue";
 import MistakeTypesView from "./views/MistakeTypesView.vue";
 import RecitationDocumentsView from "./views/RecitationDocumentsView.vue";
 import ReportsView from "./views/ReportsView.vue";
+import UsersView from "./views/UsersView.vue";
+import LoginView from "./views/LoginView.vue";
 
 const routes = [
+  { path: "/login", component: LoginView, meta: { public: true } },
   { path: "/", redirect: "/reports" },
   { path: "/reports", component: ReportsView },
   { path: "/students", component: StudentsView },
@@ -20,12 +23,19 @@ const routes = [
   { path: "/levels", component: LevelsView },
   { path: "/groups", component: GroupsView },
   { path: "/mistake-types", component: MistakeTypesView },
-  { path: "/recitations", component: RecitationDocumentsView }
+  { path: "/recitations", component: RecitationDocumentsView },
+  { path: "/users", component: UsersView }
 ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes
+});
+
+router.beforeEach((to) => {
+  const loggedIn = !!localStorage.getItem("token");
+  if (!to.meta.public && !loggedIn) return "/login";
+  if (to.path === "/login" && loggedIn) return "/";
 });
 
 const app = createApp(App);

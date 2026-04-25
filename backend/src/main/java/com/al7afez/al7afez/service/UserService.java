@@ -9,7 +9,7 @@ import com.al7afez.al7afez.repositories.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,9 +17,9 @@ import org.springframework.web.server.ResponseStatusException;
 public class UserService extends AbsMasterFileService<AppUser> {
     private final UserRepository repository;
     private final MappingService mappingService;
-    private final BCryptPasswordEncoder encoder;
+    private final PasswordEncoder encoder;
 
-    public UserService(UserRepository repository, MappingService mappingService, BCryptPasswordEncoder encoder) {
+    public UserService(UserRepository repository, MappingService mappingService, PasswordEncoder encoder) {
         this.repository = repository;
         this.mappingService = mappingService;
         this.encoder = encoder;

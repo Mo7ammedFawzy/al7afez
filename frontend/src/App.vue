@@ -1,5 +1,6 @@
 <template>
-  <div class="app-shell">
+  <RouterView v-if="route.path === '/login'" />
+  <div v-else class="app-shell">
     <aside class="sidebar">
       <h1 class="brand">Al7afez Admin</h1>
       <p class="notice">
@@ -13,7 +14,11 @@
         <RouterLink to="/levels">{{ $t("nav.levels") }}</RouterLink>
         <RouterLink to="/groups">{{ $t("nav.groups") }}</RouterLink>
         <RouterLink to="/mistake-types">{{ $t("nav.mistakeTypes") }}</RouterLink>
+        <RouterLink to="/users">{{ $t("nav.users") }}</RouterLink>
       </nav>
+      <button class="secondary" style="margin-top: auto" type="button" @click="logout">
+        {{ $t("login.logout") }}
+      </button>
     </aside>
     <main class="content">
       <RouterView />
@@ -22,5 +27,13 @@
 </template>
 
 <script setup>
-import { RouterLink, RouterView } from "vue-router";
+import { useRoute, useRouter, RouterLink, RouterView } from "vue-router";
+
+const route = useRoute();
+const router = useRouter();
+
+function logout() {
+  localStorage.removeItem("token");
+  router.push("/login");
+}
 </script>
