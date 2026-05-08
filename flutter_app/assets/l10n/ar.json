@@ -1,0 +1,44 @@
+{
+  "appTitle": "الحافظ",
+  "appSubtitle": "نظام إدارة التلاوة القرآنية",
+
+  "fillAllFields": "يرجى ملء جميع الحقول",
+  "username": "اسم المستخدم",
+  "password": "كلمة المرور",
+  "loginButton": "تسجيل الدخول",
+
+  "addRecitation": "إضافة تلاوة",
+  "editRecitation": "تعديل تلاوة",
+  "logout": "تسجيل الخروج",
+
+  "code": "الكود",
+  "required": "مطلوب",
+  "numberOfAyat": "عدد الآيات",
+  "fromSurah": "من سورة",
+  "toSurah": "إلى سورة",
+  "fromAya": "من آية",
+  "toAya": "إلى آية",
+  "grade": "التقدير (0-10)",
+  "gradeMustBeBetween": "يجب أن يكون بين 0 و 10",
+  "sessionNotes": "ملاحظات الجلسة",
+  "saveButton": "حفظ",
+  "createButton": "إنشاء",
+  "cancelButton": "إلغاء",
+  "sessionDate": "تاريخ الجلسة",
+
+  "student": "الطالب",
+  "chooseStudent": "اختر الطالب",
+
+  "mistakesLog": "سجل الأخطاء",
+  "mistakesHint": "أضف كل نوع خطأ مع عدد مرات تكراره.",
+  "addMistake": "إضافة خطأ",
+  "noMistakes": "لم يتم إضافة أخطاء بعد.",
+  "mistakeType": "نوع الخطأ",
+  "choose": "اختر",
+  "count": "العدد",
+  "note": "ملاحظة",
+  "delete": "حذف",
+
+  "savedSuccessfully": "تم الحفظ بنجاح ✓",
+  "requestError": "خطأ في الطلب ({statusCode})"
+}

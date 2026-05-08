@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../l10n/tr.dart';
 import '../services/api_service.dart';
 import 'recitation_form_screen.dart';
 
@@ -19,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final username = _usernameCtrl.text.trim();
     final password = _passwordCtrl.text;
     if (username.isEmpty || password.isEmpty) {
-      setState(() => _error = 'يرجى ملء جميع الحقول');
+      setState(() => _error = Tr.translate('fillAllFields'));
       return;
     }
 
@@ -37,7 +38,11 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } on ApiException catch (e) {
-      setState(() => _error = e.message);
+      if (mounted) {
+        setState(() => _error = e.message.isNotEmpty
+            ? e.message
+            : Tr.translate('requestError', {'statusCode': e.statusCode.toString()}));
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -62,14 +67,14 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'الحافظ',
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+                Text(
+                  Tr.translate('appTitle'),
+                  style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'نظام إدارة التلاوة القرآنية',
+                  Tr.translate('appSubtitle'),
                   style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                   textAlign: TextAlign.center,
                 ),
@@ -77,9 +82,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextField(
                   controller: _usernameCtrl,
                   textDirection: TextDirection.ltr,
-                  decoration: const InputDecoration(
-                    labelText: 'اسم المستخدم',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: Tr.translate('username'),
+                    border: const OutlineInputBorder(),
                   ),
                   onSubmitted: (_) => _login(),
                 ),
@@ -88,9 +93,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _passwordCtrl,
                   obscureText: true,
                   textDirection: TextDirection.ltr,
-                  decoration: const InputDecoration(
-                    labelText: 'كلمة المرور',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: Tr.translate('password'),
+                    border: const OutlineInputBorder(),
                   ),
                   onSubmitted: (_) => _login(),
                 ),
@@ -108,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
                   child: _loading
                       ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                      : const Text('تسجيل الدخول', style: TextStyle(fontSize: 16)),
+                      : Text(Tr.translate('loginButton'), style: const TextStyle(fontSize: 16)),
                 ),
               ],
             ),

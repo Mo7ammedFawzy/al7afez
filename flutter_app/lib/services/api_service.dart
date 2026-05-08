@@ -4,7 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiException implements Exception {
   final String message;
-  ApiException(this.message);
+  final int statusCode;
+  ApiException(this.message, {this.statusCode = 0});
+  bool get isUnauthorized => statusCode == 401;
   @override
   String toString() => message;
 }
@@ -64,10 +66,9 @@ class ApiService {
 
   static dynamic _handle(http.Response res) {
     if (res.statusCode == 204) return null;
-    if (res.statusCode == 401) throw ApiException('غير مصرح — يرجى تسجيل الدخول مجدداً');
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      final msg = res.body.isNotEmpty ? res.body : 'خطأ في الطلب (${res.statusCode})';
-      throw ApiException(msg);
+      final msg = res.body.isNotEmpty ? res.body : '';
+      throw ApiException(msg, statusCode: res.statusCode);
     }
     if (res.body.isEmpty) return null;
     return jsonDecode(utf8.decode(res.bodyBytes));
