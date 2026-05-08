@@ -40,5 +40,18 @@
   "delete": "حذف",
 
   "savedSuccessfully": "تم الحفظ بنجاح ✓",
-  "requestError": "خطأ في الطلب ({statusCode})"
+  "requestError": "خطأ في الطلب ({statusCode})",
+
+  "home": "الرئيسية",
+  "newRecitation": "تلاوة جديدة",
+  "profile": "الملف الشخصي",
+  "welcome": "مرحباً، {name}",
+  "students": "الطلاب",
+  "groups": "المجموعات",
+  "recitations": "التلاوات",
+  "averageGrade": "متوسط التقدير",
+  "recentRecitations": "آخر التلاوات",
+  "sheikh": "الشيخ",
+  "noData": "لا توجد بيانات",
+  "retry": "إعادة المحاولة"
 }

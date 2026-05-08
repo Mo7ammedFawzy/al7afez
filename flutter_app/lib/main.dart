@@ -3,7 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/tr.dart';
 import 'services/api_service.dart';
 import 'screens/login_screen.dart';
-import 'screens/recitation_form_screen.dart';
+import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +37,7 @@ class Al7afezApp extends StatelessWidget {
         textDirection: TextDirection.rtl,
         child: child!,
       ),
-      home: startLoggedIn ? const RecitationFormScreen() : const LoginScreen(),
+      home: startLoggedIn ? const HomeScreen() : const LoginScreen(),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../models/user_info.dart';
 
 class ApiException implements Exception {
   final String message;
@@ -15,10 +16,17 @@ class ApiService {
   // 10.0.2.2 is the Android emulator's alias for the host machine's localhost
   static const String _base = 'http://10.0.2.2:6767/api';
   static String? _token;
+  static UserInfo? _currentUser;
+
+  static UserInfo? get currentUser => _currentUser;
 
   static Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
     _token = prefs.getString('token');
+    final userJson = prefs.getString('userInfo');
+    if (userJson != null) {
+      _currentUser = UserInfo.fromJson(jsonDecode(userJson) as Map<String, dynamic>);
+    }
   }
 
   static Future<void> saveToken(String token) async {
@@ -27,10 +35,23 @@ class ApiService {
     await prefs.setString('token', token);
   }
 
+  static Future<void> saveUserInfo(UserInfo info) async {
+    _currentUser = info;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userInfo', jsonEncode(info.toJson()));
+  }
+
   static Future<void> clearToken() async {
     _token = null;
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
+    await clearUserInfo();
+  }
+
+  static Future<void> clearUserInfo() async {
+    _currentUser = null;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('userInfo');
   }
 
   static bool get hasToken => _token != null;

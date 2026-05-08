@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../l10n/tr.dart';
+import '../models/user_info.dart';
 import '../services/api_service.dart';
-import 'recitation_form_screen.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -31,10 +32,11 @@ class _LoginScreenState extends State<LoginScreen> {
         'password': password,
       });
       await ApiService.saveToken(data['token'] as String);
+      await ApiService.saveUserInfo(UserInfo.fromJson(data as Map<String, dynamic>));
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const RecitationFormScreen()),
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
       }
     } on ApiException catch (e) {
