@@ -4,10 +4,12 @@ import com.al7afez.al7afez.dto.MistakeBreakdownResponse;
 import com.al7afez.al7afez.dto.ReportDimensionResponse;
 import com.al7afez.al7afez.dto.ReportSummaryResponse;
 import com.al7afez.al7afez.dto.ReportsOverviewResponse;
+import com.al7afez.al7afez.infra.SecurityService;
 import com.al7afez.al7afez.model.entities.Level;
 import com.al7afez.al7afez.model.entities.RecitationDocument;
 import com.al7afez.al7afez.model.entities.RecitationGroup;
 import com.al7afez.al7afez.model.details.RecitationMistakeLine;
+import com.al7afez.al7afez.model.entities.Sheikh;
 import com.al7afez.al7afez.model.entities.Student;
 import com.al7afez.al7afez.repositories.GroupRepository;
 import com.al7afez.al7afez.repositories.LevelRepository;
@@ -20,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
@@ -30,25 +33,33 @@ public class ReportsService {
     private final GroupRepository groupRepository;
     private final LevelRepository levelRepository;
     private final RecitationService recitationService;
+    private final SecurityService securityService;
 
     public ReportsService(
             RecitationDocumentRepository recitationRepository,
             StudentRepository studentRepository,
             GroupRepository groupRepository,
             LevelRepository levelRepository,
-            RecitationService recitationService
+            RecitationService recitationService,
+            SecurityService securityService
     ) {
         this.recitationRepository = recitationRepository;
         this.studentRepository = studentRepository;
         this.groupRepository = groupRepository;
         this.levelRepository = levelRepository;
         this.recitationService = recitationService;
+        this.securityService = securityService;
     }
 
     public ReportsOverviewResponse getOverview() {
+        Optional<Sheikh> currentSheikh = securityService.getCurrentSheikh();
         List<RecitationDocument> recitations = recitationRepository.findAllDetailed();
-        List<Student> students = studentRepository.findAllWithGroup();
-        List<RecitationGroup> groups = groupRepository.findAllWithDetails();
+        List<Student> students = currentSheikh
+                .map(s -> studentRepository.findAllWithGroupBySheikh(s.getId()))
+                .orElseGet(studentRepository::findAllWithGroup);
+        List<RecitationGroup> groups = currentSheikh
+                .map(s -> groupRepository.findAllWithDetailsBySheikh(s.getId()))
+                .orElseGet(groupRepository::findAllWithDetails);
         List<Level> levels = levelRepository.findAll();
 
         long totalMistakes = recitations.stream()

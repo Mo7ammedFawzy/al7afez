@@ -3,6 +3,7 @@ package com.al7afez.al7afez.service;
 import com.al7afez.al7afez.dto.GroupRequest;
 import com.al7afez.al7afez.dto.GroupResponse;
 import com.al7afez.al7afez.infra.ObjectChecker;
+import com.al7afez.al7afez.infra.SecurityService;
 import com.al7afez.al7afez.model.entities.RecitationGroup;
 import com.al7afez.al7afez.model.entities.Student;
 import com.al7afez.al7afez.repositories.GroupRepository;
@@ -24,15 +25,18 @@ public class GroupService extends AbsMasterFileService<RecitationGroup> {
     private final GroupRepository groupRepository;
     private final StudentRepository studentRepository;
     private final MappingService mappingService;
+    private final SecurityService securityService;
 
     public GroupService(
             GroupRepository groupRepository,
             StudentRepository studentRepository,
-            MappingService mappingService
+            MappingService mappingService,
+            SecurityService securityService
     ) {
         this.groupRepository = groupRepository;
         this.studentRepository = studentRepository;
         this.mappingService = mappingService;
+        this.securityService = securityService;
     }
 
 
@@ -48,7 +52,9 @@ public class GroupService extends AbsMasterFileService<RecitationGroup> {
     }
 
     public Page<GroupResponse> getAll(Pageable pageable) {
-        return groupRepository.findAllWithDetails(pageable)
+        return securityService.getCurrentSheikh()
+                .map(sheikh -> groupRepository.findAllWithDetailsBySheikh(sheikh.getId(), pageable))
+                .orElseGet(() -> groupRepository.findAllWithDetails(pageable))
                 .map(mappingService::toGroupResponse);
     }
 

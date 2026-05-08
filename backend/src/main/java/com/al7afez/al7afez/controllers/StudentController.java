@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,8 +28,11 @@ public class StudentController {
     }
 
     @GetMapping
-    public Page<StudentResponse> getAll(@PageableDefault(size = 10) Pageable pageable) {
-        return service.getAll(pageable);
+    public Page<StudentResponse> getAll(
+            @PageableDefault(size = 10) Pageable pageable,
+            @RequestParam(required = false) Long groupId
+    ) {
+        return service.getAll(pageable, groupId);
     }
 
     @GetMapping("/{id}")

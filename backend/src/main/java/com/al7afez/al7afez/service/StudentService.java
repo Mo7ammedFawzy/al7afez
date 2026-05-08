@@ -2,8 +2,12 @@ package com.al7afez.al7afez.service;
 
 import com.al7afez.al7afez.dto.StudentRequest;
 import com.al7afez.al7afez.dto.StudentResponse;
+import com.al7afez.al7afez.infra.SecurityService;
+import com.al7afez.al7afez.model.entities.Sheikh;
 import com.al7afez.al7afez.model.entities.Student;
 import com.al7afez.al7afez.repositories.StudentRepository;
+
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,14 +19,25 @@ import org.springframework.web.server.ResponseStatusException;
 public class StudentService extends AbsMasterFileService<Student> {
     private final StudentRepository studentRepository;
     private final MappingService mappingService;
+    private final SecurityService securityService;
 
-    public StudentService(StudentRepository studentRepository, MappingService mappingService) {
+    public StudentService(StudentRepository studentRepository, MappingService mappingService, SecurityService securityService) {
         this.studentRepository = studentRepository;
         this.mappingService = mappingService;
+        this.securityService = securityService;
     }
 
-    public Page<StudentResponse> getAll(Pageable pageable) {
-        return studentRepository.findAllWithGroup(pageable).map(mappingService::toStudentResponse);
+    public Page<StudentResponse> getAll(Pageable pageable, Long groupId) {
+        Optional<Sheikh> currentSheikh = securityService.getCurrentSheikh();
+        Page<Student> page;
+        if (groupId != null) {
+            page = studentRepository.findAllWithGroupByGroup(groupId, pageable);
+        } else if (currentSheikh.isPresent()) {
+            page = studentRepository.findAllWithGroupBySheikh(currentSheikh.get().getId(), pageable);
+        } else {
+            page = studentRepository.findAllWithGroup(pageable);
+        }
+        return page.map(mappingService::toStudentResponse);
     }
 
     public StudentResponse getById(Long id) {

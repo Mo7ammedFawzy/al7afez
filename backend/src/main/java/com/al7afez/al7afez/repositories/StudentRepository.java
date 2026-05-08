@@ -14,6 +14,18 @@ public interface StudentRepository extends BaseRepository<Student, Long> {
     @EntityGraph(attributePaths = {"recitationGroup", "recitationGroup.level"})
     Page<Student> findAllWithGroup(Pageable pageable);
 
+    @Query("select s from Student s where s.recitationGroup.sheikh.id = :sheikhId")
+    @EntityGraph(attributePaths = {"recitationGroup", "recitationGroup.level"})
+    Page<Student> findAllWithGroupBySheikh(@Param("sheikhId") Long sheikhId, Pageable pageable);
+
+    @Query("select s from Student s where s.recitationGroup.id = :groupId")
+    @EntityGraph(attributePaths = {"recitationGroup", "recitationGroup.level"})
+    Page<Student> findAllWithGroupByGroup(@Param("groupId") Long groupId, Pageable pageable);
+
+    @Query("select s from Student s where s.recitationGroup.id = :groupId and s.recitationGroup.sheikh.id = :sheikhId")
+    @EntityGraph(attributePaths = {"recitationGroup", "recitationGroup.level"})
+    Page<Student> findAllWithGroupBySheikhAndGroup(@Param("sheikhId") Long sheikhId, @Param("groupId") Long groupId, Pageable pageable);
+
     @Query("select s from Student s where s.id = :id")
     @EntityGraph(attributePaths = {"recitationGroup", "recitationGroup.level"})
     Optional<Student> findByIdWithGroup(@Param("id") Long id);
@@ -21,6 +33,10 @@ public interface StudentRepository extends BaseRepository<Student, Long> {
     @Query("select s from Student s")
     @EntityGraph(attributePaths = {"recitationGroup", "recitationGroup.level"})
     List<Student> findAllWithGroup();
+
+    @Query("select s from Student s where s.recitationGroup.sheikh.id = :sheikhId")
+    @EntityGraph(attributePaths = {"recitationGroup", "recitationGroup.level"})
+    List<Student> findAllWithGroupBySheikh(@Param("sheikhId") Long sheikhId);
 
     List<Student> findByRecitationGroupIdOrderByNameAsc(Long recitationGroupId);
 }

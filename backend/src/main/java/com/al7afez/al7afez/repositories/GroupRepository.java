@@ -14,6 +14,10 @@ public interface GroupRepository extends BaseRepository<RecitationGroup, Long> {
     @EntityGraph(attributePaths = {"level", "sheikh"})
     Page<RecitationGroup> findAllWithDetails(Pageable pageable);
 
+    @Query("select g from RecitationGroup g where g.sheikh.id = :sheikhId")
+    @EntityGraph(attributePaths = {"level", "sheikh"})
+    Page<RecitationGroup> findAllWithDetailsBySheikh(@Param("sheikhId") Long sheikhId, Pageable pageable);
+
     @Query("select g from RecitationGroup g where g.id = :id")
     @EntityGraph(attributePaths = {"level", "sheikh"})
     Optional<RecitationGroup> findByIdWithDetails(@Param("id") Long id);
@@ -21,4 +25,8 @@ public interface GroupRepository extends BaseRepository<RecitationGroup, Long> {
     @Query("select g from RecitationGroup g")
     @EntityGraph(attributePaths = {"level", "sheikh"})
     List<RecitationGroup> findAllWithDetails();
+
+    @Query("select g from RecitationGroup g where g.sheikh.id = :sheikhId")
+    @EntityGraph(attributePaths = {"level", "sheikh"})
+    List<RecitationGroup> findAllWithDetailsBySheikh(@Param("sheikhId") Long sheikhId);
 }
