@@ -24,6 +24,7 @@
   "saveButton": "حفظ",
   "createButton": "إنشاء",
   "cancelButton": "إلغاء",
+  "startRecitation": "بدء التلاوة",
   "sessionDate": "تاريخ الجلسة",
 
   "student": "الطالب",
@@ -36,8 +37,10 @@
   "mistakeType": "نوع الخطأ",
   "choose": "اختر",
   "count": "العدد",
-  "note": "ملاحظة",
   "delete": "حذف",
+
+  "deletedMistake": "تم حذف \"{name}\"",
+  "undo": "تراجع",
 
   "savedSuccessfully": "تم الحفظ بنجاح ✓",
   "requestError": "خطأ في الطلب ({statusCode})",
