@@ -4,6 +4,12 @@ import App from "./App.vue";
 import i18n from "./i18n";
 import "./style.css";
 
+import PrimeVue from "primevue/config";
+import Aura from "@primeuix/themes/aura";
+import ToastService from "primevue/toastservice";
+import ConfirmationService from "primevue/confirmationservice";
+import "primeicons/primeicons.css";
+
 import StudentsView from "./views/StudentsView.vue";
 import SheikhsView from "./views/SheikhsView.vue";
 import LevelsView from "./views/LevelsView.vue";
@@ -41,6 +47,17 @@ router.beforeEach((to) => {
 const app = createApp(App);
 app.use(router);
 app.use(i18n);
+app.use(PrimeVue, {
+  theme: {
+    preset: Aura,
+    options: {
+      darkModeSelector: ".dark",
+    },
+  },
+  ripple: true,
+});
+app.use(ToastService);
+app.use(ConfirmationService);
 
 const currentLocale = i18n.global.locale.value || i18n.global.locale;
 document.documentElement.lang = currentLocale;
