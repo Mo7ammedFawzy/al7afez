@@ -137,7 +137,6 @@
     "mistakeLogHelp": "Add every mistake type with how many times it appeared in this recitation.",
     "addMistake": "Add Mistake",
     "noMistakesLogged": "No mistake entries added yet.",
-    "mistakeNote": "Short note",
     "count": "Count",
     "totalMistakes": "Total Mistakes"
   },

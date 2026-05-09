@@ -71,7 +71,6 @@
             </option>
           </select>
           <input v-model.number="mistake.count" type="number" min="1" :placeholder="$t('recitations.count')" />
-          <input v-model="mistake.note" :placeholder="$t('recitations.mistakeNote')" />
           <button class="danger" type="button" @click="handleRemoveMistake(index)">{{ $t("common.delete") }}</button>
         </div>
       </div>
@@ -118,8 +117,7 @@ function handleList() {
 function handleAddMistake() {
   form.mistakes.push({
     mistakeTypeId: "",
-    count: 1,
-    note: ""
+    count: 1
   });
 }
 

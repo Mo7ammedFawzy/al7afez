@@ -17,7 +17,6 @@ public class RecitationMistakeLine extends BaseLine {
     private MistakeType mistakeType;
 
     private Integer count;
-    private String note;
 
     public RecitationDocument getRecitationDocument() {
         return recitationDocument;
@@ -43,11 +42,5 @@ public class RecitationMistakeLine extends BaseLine {
         this.count = count;
     }
 
-    public String getNote() {
-        return note;
-    }
 
-    public void setNote(String note) {
-        this.note = note;
-    }
 }

@@ -80,8 +80,7 @@ public class MappingService {
         return new RecitationMistakeResponse(
                 mistake.getId(),
                 toEntityReferenceData(mistake.getMistakeType()),
-                mistake.getCount(),
-                mistake.getNote()
+                mistake.getCount()
         );
     }
 
@@ -208,7 +207,6 @@ public class MappingService {
             line.setRecitationDocument(recitation);
             line.setMistakeType(resolveMistakeType(req.mistakeTypeId()));
             line.setCount(req.count());
-            line.setNote(normalize(req.note()));
             lines.add(line);
         }
         return lines.stream().filter(Objects::nonNull).toList();

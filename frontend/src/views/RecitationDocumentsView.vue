@@ -98,8 +98,7 @@ function edit(recitation) {
     notes: recitation.notes || "",
     mistakes: (recitation.mistakes || []).map((mistake) => ({
       mistakeTypeId: mistake.mistakeType?.id || "",
-      count: mistake.count ?? 1,
-      note: mistake.note || ""
+      count: mistake.count ?? 1
     }))
   };
   showForm.value = true;
@@ -131,8 +130,7 @@ function buildPayload() {
       .filter((mistake) => mistake.mistakeTypeId && mistake.count)
       .map((mistake) => ({
         mistakeTypeId: Number(mistake.mistakeTypeId),
-        count: Number(mistake.count),
-        note: mistake.note || null
+        count: Number(mistake.count)
       }))
   };
 }
