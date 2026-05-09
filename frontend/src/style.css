@@ -3,7 +3,7 @@
   color-scheme: light;
 
   /* Typography */
-  --font-body: "Cairo", "Segoe UI", sans-serif;
+  --font-body: "Cairo", "Noto Naskh Arabic", "Segoe UI", sans-serif;
   --font-serif: "Spectral", serif;
   --font-mono: "IBM Plex Mono", monospace;
 
@@ -550,4 +550,83 @@ button:active {
   border: 1px solid var(--color-primary-100);
   border-radius: var(--radius-lg);
   background: var(--color-surface-raised);
+}
+
+/* ── RTL Global ──────────────────────────────────────────────────────────── */
+[dir="rtl"] body {
+  text-align: right;
+}
+
+[dir="rtl"] input,
+[dir="rtl"] textarea,
+[dir="rtl"] select {
+  text-align: right;
+  direction: rtl;
+}
+
+/* Numbers and Latin text inside RTL pages should stay LTR */
+[dir="rtl"] .ltr {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: isolate;
+}
+
+/* ── PrimeVue RTL Overrides ──────────────────────────────────────────────── */
+
+/* Dropdown panel alignment */
+[dir="rtl"] .p-select-overlay,
+[dir="rtl"] .p-autocomplete-overlay,
+[dir="rtl"] .p-datepicker-panel {
+  text-align: right;
+}
+
+/* Input group icons — flip padding side */
+[dir="rtl"] .p-inputgroup .p-inputtext {
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+[dir="rtl"] .p-inputgroup .p-inputgroup-addon:first-child {
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+}
+
+[dir="rtl"] .p-inputgroup .p-inputgroup-addon:last-child {
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+}
+
+/* DataTable — right-align headers and cells */
+[dir="rtl"] .p-datatable .p-datatable-thead > tr > th,
+[dir="rtl"] .p-datatable .p-datatable-tbody > tr > td {
+  text-align: right;
+}
+
+/* Toast — position on left side for RTL (right side visually) */
+[dir="rtl"] .p-toast {
+  left: 20px;
+  right: auto;
+}
+
+/* Dialog — right-align footer buttons */
+[dir="rtl"] .p-dialog-footer {
+  text-align: left;
+}
+
+/* Breadcrumb / Steps — reverse chevron */
+[dir="rtl"] .p-breadcrumb .p-breadcrumb-chevron {
+  transform: scaleX(-1);
+}
+
+/* Paginator chevrons */
+[dir="rtl"] .p-paginator .p-paginator-prev .p-icon,
+[dir="rtl"] .p-paginator .p-paginator-next .p-icon {
+  transform: scaleX(-1);
+}
+
+/* TreeSelect / Tree — indent direction */
+[dir="rtl"] .p-tree .p-tree-node-content {
+  flex-direction: row-reverse;
+}
+
+[dir="rtl"] .p-tree .p-treenode-children {
+  padding-inline-start: var(--space-6);
+  padding-inline-end: 0;
 }

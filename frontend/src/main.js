@@ -79,8 +79,4 @@ app.use(PrimeVue, {
 app.use(ToastService);
 app.use(ConfirmationService);
 
-const currentLocale = i18n.global.locale.value || i18n.global.locale;
-document.documentElement.lang = currentLocale;
-document.documentElement.dir = currentLocale === "ar" ? "rtl" : "ltr";
-
 app.mount("#app");
