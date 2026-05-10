@@ -362,6 +362,18 @@ select[multiple] {
   min-height: 120px;
 }
 
+/* ── App Field (reusable field wrapper) ──────────────────────────────────── */
+.req {
+  color: var(--color-danger);
+  margin-inline-start: 2px;
+}
+
+.field-error {
+  font-size: var(--text-xs);
+  color: var(--color-danger);
+  margin-top: var(--space-1);
+}
+
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
 button {
   border: none;
