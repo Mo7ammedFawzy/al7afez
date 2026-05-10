@@ -1,11 +1,13 @@
 <template>
-  <section class="card">
-    <div class="section-header">
-      <div>
-        <h2>{{ $t("students.list") }}</h2>
-      </div>
-      <button class="primary icon" type="button" @click="handleNew" :title="$t('common.new')" :aria-label="$t('common.new')">＋</button>
-    </div>
+  <PageLayout :title="$t('students.list')" icon="pi-users" :count="items.length">
+    <template #actions>
+      <Button
+        :label="$t('students.new')"
+        icon="pi pi-plus"
+        @click="emit('new')"
+      />
+    </template>
+
     <table class="table">
       <thead>
         <tr>
@@ -23,63 +25,86 @@
         <tr v-for="student in items" :key="student.id">
           <td>{{ student.name }}</td>
           <td>{{ student.recitationGroup?.name || $t("students.noGroup") }}</td>
-          <td>{{ student.level?.name || "-" }}</td>
+          <td>{{ student.level?.name || "—" }}</td>
           <td>{{ student.gender === "MALE" ? $t("common.male") : $t("common.female") }}</td>
-          <td>{{ student.phoneNumber }}</td>
-          <td>{{ student.parentPhoneNumber }}</td>
-          <td>{{ student.birthDate }}</td>
+          <td class="ltr">{{ student.phoneNumber }}</td>
+          <td class="ltr">{{ student.parentPhoneNumber }}</td>
+          <td class="ltr">{{ student.birthDate }}</td>
           <td>
-            <div class="button-row">
-              <button class="secondary icon" type="button" @click="handleEdit(student)" :title="$t('common.edit')" :aria-label="$t('common.edit')">✏️</button>
-              <button class="danger icon" type="button" @click="handleRemove(student)" :title="$t('common.delete')" :aria-label="$t('common.delete')">🗑️</button>
+            <div class="row-actions">
+              <Button
+                icon="pi pi-pencil"
+                severity="secondary"
+                text
+                rounded
+                :title="$t('common.edit')"
+                @click="emit('edit', student)"
+              />
+              <Button
+                icon="pi pi-trash"
+                severity="danger"
+                text
+                rounded
+                :title="$t('common.delete')"
+                @click="emit('remove', student)"
+              />
             </div>
           </td>
         </tr>
+        <tr v-if="!items.length">
+          <td colspan="8" class="empty-row">{{ $t("students.list") }} — لا توجد بيانات</td>
+        </tr>
       </tbody>
     </table>
+
     <div class="pager">
-      <button class="secondary icon" type="button" :disabled="page === 0" @click="handlePrevPage" :title="$t('common.prev')" :aria-label="$t('common.prev')">▶</button>
+      <Button
+        icon="pi pi-angle-right"
+        severity="secondary"
+        text
+        rounded
+        :disabled="page === 0"
+        :title="$t('common.prev')"
+        @click="emit('changePage', -1)"
+      />
       <span>{{ page + 1 }} / {{ totalPages || 1 }}</span>
-      <button class="secondary icon" type="button" :disabled="page + 1 >= totalPages" @click="handleNextPage" :title="$t('common.next')" :aria-label="$t('common.next')">◀</button>
+      <Button
+        icon="pi pi-angle-left"
+        severity="secondary"
+        text
+        rounded
+        :disabled="page + 1 >= totalPages"
+        :title="$t('common.next')"
+        @click="emit('changePage', 1)"
+      />
     </div>
-  </section>
+  </PageLayout>
 </template>
 
 <script setup>
+import Button from "primevue/button";
+import PageLayout from "./PageLayout.vue";
+
 defineProps({
-  items: {
-    type: Array,
-    default: () => []
-  },
-  page: {
-    type: Number,
-    default: 0
-  },
-  totalPages: {
-    type: Number,
-    default: 1
-  }
+  items:      { type: Array,  default: () => [] },
+  page:       { type: Number, default: 0 },
+  totalPages: { type: Number, default: 1 },
 });
 
 const emit = defineEmits(["edit", "remove", "changePage", "new"]);
-
-function handleNew() {
-  emit("new");
-}
-
-function handleEdit(student) {
-  emit("edit", student);
-}
-
-function handleRemove(student) {
-  emit("remove", student);
-}
-
-function handlePrevPage() {
-  emit("changePage", -1);
-}
-
-function handleNextPage() {
-  emit("changePage", 1);
-}
 </script>
+
+<style scoped>
+.row-actions {
+  display: flex;
+  gap: var(--space-1);
+  justify-content: flex-end;
+}
+
+.empty-row {
+  text-align: center;
+  color: var(--color-ink-muted);
+  padding: var(--space-8);
+  font-size: var(--text-sm);
+}
+</style>

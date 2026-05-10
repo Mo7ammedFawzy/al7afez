@@ -1,19 +1,25 @@
 <template>
-  <section class="card">
-    <div class="section-header">
-      <div>
-        <h2>{{ form.id ? $t("students.edit") : $t("students.new") }}</h2>
-      </div>
-      <button class="primary icon" type="button" @click="handleList" :title="$t('common.list')" :aria-label="$t('common.list')">☰</button>
-    </div>
-    <form class="grid grid-2" @submit.prevent="handleSubmit">
+  <PageLayout
+    :title="form.id ? $t('students.edit') : $t('students.new')"
+    icon="pi-users"
+  >
+    <template #actions>
+      <Button
+        :label="$t('common.list')"
+        icon="pi pi-list"
+        severity="secondary"
+        @click="emit('list')"
+      />
+    </template>
+
+    <form class="grid grid-2" @submit.prevent="emit('submit')">
       <div>
         <label>{{ $t("students.name") }}</label>
         <input v-model="form.name" required />
       </div>
       <div>
         <label>{{ $t("students.code") }}</label>
-        <input v-model="form.code" required :placeholder="$t('students.code')" />
+        <input v-model="form.code" required />
       </div>
       <div>
         <label>{{ $t("students.birthDate") }}</label>
@@ -44,36 +50,31 @@
         </select>
       </div>
       <div class="button-row">
-        <button class="primary" type="submit">{{ form.id ? $t("common.save") : $t("common.create") }}</button>
-        <button class="secondary" type="button" @click="handleCancel">{{ $t("common.cancel") }}</button>
+        <Button
+          type="submit"
+          :label="form.id ? $t('common.save') : $t('common.create')"
+          icon="pi pi-check"
+        />
+        <Button
+          type="button"
+          :label="$t('common.cancel')"
+          icon="pi pi-times"
+          severity="secondary"
+          @click="emit('cancel')"
+        />
       </div>
     </form>
-  </section>
+  </PageLayout>
 </template>
 
 <script setup>
+import Button from "primevue/button";
+import PageLayout from "./PageLayout.vue";
+
 defineProps({
-  form: {
-    type: Object,
-    required: true
-  },
-  groups: {
-    type: Array,
-    default: () => []
-  }
+  form:   { type: Object, required: true },
+  groups: { type: Array,  default: () => [] },
 });
 
 const emit = defineEmits(["submit", "cancel", "list"]);
-
-function handleSubmit() {
-  emit("submit");
-}
-
-function handleCancel() {
-  emit("cancel");
-}
-
-function handleList() {
-  emit("list");
-}
 </script>
