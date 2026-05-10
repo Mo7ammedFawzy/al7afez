@@ -17,7 +17,8 @@
     "groups": "Groups",
     "mistakeTypes": "Mistake Types",
     "recitations": "Recitation Documents",
-    "users": "Users"
+    "users": "Users",
+    "profile": "Profile"
   },
   "badge": {
     "master": "MasterFile",

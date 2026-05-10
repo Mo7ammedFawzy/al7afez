@@ -42,6 +42,7 @@ async function submit() {
       password: password.value
     });
     localStorage.setItem("token", response.token);
+    localStorage.setItem("user", JSON.stringify({ name: response.name, username: response.username }));
     router.push("/");
   } catch (err) {
     error.value = err.message;

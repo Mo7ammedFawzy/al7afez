@@ -39,6 +39,7 @@ import RecitationDocumentsView from "./views/RecitationDocumentsView.vue";
 import ReportsView from "./views/ReportsView.vue";
 import UsersView from "./views/UsersView.vue";
 import LoginView from "./views/LoginView.vue";
+import ProfileView from "./views/ProfileView.vue";
 
 const routes = [
   { path: "/login", component: LoginView, meta: { public: true } },
@@ -50,7 +51,8 @@ const routes = [
   { path: "/groups", component: GroupsView },
   { path: "/mistake-types", component: MistakeTypesView },
   { path: "/recitations", component: RecitationDocumentsView },
-  { path: "/users", component: UsersView }
+  { path: "/users", component: UsersView },
+  { path: "/profile", component: ProfileView }
 ];
 
 const router = createRouter({

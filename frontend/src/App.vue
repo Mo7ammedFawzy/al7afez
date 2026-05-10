@@ -27,6 +27,7 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 import { useRoute, useRouter, RouterLink, RouterView } from "vue-router";
 
 const route = useRoute();
