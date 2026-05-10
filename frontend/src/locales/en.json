@@ -38,7 +38,8 @@
     "next": "Next",
     "new": "New",
     "cancel": "Cancel",
-    "list": "List"
+    "list": "List",
+    "noData": "No data available"
   },
   "students": {
     "title": "Students",

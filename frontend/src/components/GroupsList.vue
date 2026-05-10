@@ -1,77 +1,48 @@
 <template>
-  <section class="card">
-    <div class="section-header">
-      <div>
-        <h2>{{ $t("groups.list") }}</h2>
-      </div>
-      <button class="primary icon" type="button" @click="handleNew" :title="$t('common.new')" :aria-label="$t('common.new')">＋</button>
-    </div>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>{{ $t("groups.name") }}</th>
-          <th>{{ $t("groups.level") }}</th>
-          <th>{{ $t("groups.sheikh") }}</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="group in items" :key="group.id">
-          <td>{{ group.name }}</td>
-          <td>{{ group.level?.name || "" }}</td>
-          <td>{{ group.sheikh?.name || "" }}</td>
-          <td>
-            <div class="button-row">
-              <button class="secondary icon" type="button" @click="handleEdit(group)" :title="$t('common.edit')" :aria-label="$t('common.edit')">✏️</button>
-              <button class="danger icon" type="button" @click="handleRemove(group)" :title="$t('common.delete')" :aria-label="$t('common.delete')">🗑️</button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="pager">
-      <button class="secondary icon" type="button" :disabled="page === 0" @click="handlePrevPage" :title="$t('common.prev')" :aria-label="$t('common.prev')">▶</button>
-      <span>{{ page + 1 }} / {{ totalPages || 1 }}</span>
-      <button class="secondary icon" type="button" :disabled="page + 1 >= totalPages" @click="handleNextPage" :title="$t('common.next')" :aria-label="$t('common.next')">◀</button>
-    </div>
-  </section>
+  <PageLayout :title="$t('groups.list')" icon="pi-sitemap" :count="items.length">
+    <template #actions>
+      <Button :label="$t('groups.new')" icon="pi pi-plus" @click="emit('new')" />
+    </template>
+
+    <AppTable
+      :columns="columns"
+      :items="items"
+      :page="page"
+      :totalPages="totalPages"
+      @edit="emit('edit', $event)"
+      @remove="emit('remove', $event)"
+      @changePage="emit('changePage', $event)"
+    >
+      <template #cell-level="{ item }">
+        {{ item.level?.name || '—' }}
+      </template>
+      <template #cell-sheikh="{ item }">
+        {{ item.sheikh?.name || '—' }}
+      </template>
+    </AppTable>
+  </PageLayout>
 </template>
 
 <script setup>
+import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+import Button from 'primevue/button';
+import PageLayout from './PageLayout.vue';
+import AppTable from './AppTable.vue';
+
+const { t } = useI18n();
+
 defineProps({
-  items: {
-    type: Array,
-    default: () => []
-  },
-  totalPages: {
-    type: Number,
-    default: 1
-  },
-  page: {
-    type: Number,
-    default: 0
-  }
+  items:      { type: Array,  default: () => [] },
+  page:       { type: Number, default: 0 },
+  totalPages: { type: Number, default: 1 },
 });
 
-const emit = defineEmits(["edit", "remove", "changePage", "new"]);
+const emit = defineEmits(['edit', 'remove', 'changePage', 'new']);
 
-function handleNew() {
-  emit("new");
-}
-
-function handleEdit(group) {
-  emit("edit", group);
-}
-
-function handleRemove(group) {
-  emit("remove", group);
-}
-
-function handlePrevPage() {
-  emit("changePage", -1);
-}
-
-function handleNextPage() {
-  emit("changePage", 1);
-}
+const columns = computed(() => [
+  { key: 'name',   label: t('groups.name') },
+  { key: 'level',  label: t('groups.level') },
+  { key: 'sheikh', label: t('groups.sheikh') },
+]);
 </script>
