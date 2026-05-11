@@ -84,18 +84,9 @@
 
 <script setup>
 const props = defineProps({
-  form: {
-    type: Object,
-    required: true
-  },
-  students: {
-    type: Array,
-    default: () => []
-  },
-  mistakeTypes: {
-    type: Array,
-    default: () => []
-  }
+  form:         { type: Object, required: true },
+  students:     { type: Array,  default: () => [] },
+  mistakeTypes: { type: Array,  default: () => [] },
 });
 
 const { form } = props;

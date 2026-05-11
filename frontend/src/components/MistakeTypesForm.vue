@@ -34,14 +34,8 @@
 
 <script setup>
 defineProps({
-  form: {
-    type: Object,
-    required: true
-  },
-  parentOptions: {
-    type: Array,
-    default: () => []
-  }
+  form:          { type: Object, required: true },
+  parentOptions: { type: Array,  default: () => [] },
 });
 
 const emit = defineEmits(["submit", "cancel", "list"]);
