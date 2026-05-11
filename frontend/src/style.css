@@ -490,8 +490,6 @@ button:active {
   font-weight: 600;
   color: var(--color-primary-800);
   font-size: var(--text-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
 }
 
 .table-row-active,
