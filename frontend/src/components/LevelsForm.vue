@@ -4,8 +4,8 @@
       <Button :label="$t('common.list')" icon="pi pi-list" severity="secondary" @click="emit('list')" />
     </template>
 
-    <form class="grid grid-2" @submit.prevent="emit('submit')">
-      <AppInput v-model="form.name" :label="$t('levels.name')" required />
+    <form class="grid grid-2" @submit.prevent="handleSubmit" novalidate>
+      <AppInput v-model="form.name" :label="$t('levels.name')" required :error="errors.name" />
       <AppInput v-model="form.code" :label="$t('levels.code')"          />
       <AppSurahAyaPicker
         :label="$t('levels.fromSurah')"
@@ -34,15 +34,30 @@
 </template>
 
 <script setup>
-import Button from 'primevue/button';
-import PageLayout from './PageLayout.vue';
-import AppInput from './AppInput.vue';
-import AppSurahAyaPicker from './AppSurahAyaPicker.vue';
+import { reactive } from "vue";
+import { useI18n } from "vue-i18n";
+import Button from "primevue/button";
+import PageLayout from "./PageLayout.vue";
+import AppInput from "./AppInput.vue";
+import AppSurahAyaPicker from "./AppSurahAyaPicker.vue";
 
-defineProps({
+const { t } = useI18n();
+
+const props = defineProps({
   form:       { type: Object,  required: true },
   submitting: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(['submit', 'cancel', 'list']);
+const emit = defineEmits(["submit", "cancel", "list"]);
+
+const errors = reactive({});
+
+function validate() {
+  errors.name = props.form.name?.trim() ? undefined : t("validation.required");
+  return !Object.values(errors).some(Boolean);
+}
+
+function handleSubmit() {
+  if (validate()) emit("submit");
+}
 </script>

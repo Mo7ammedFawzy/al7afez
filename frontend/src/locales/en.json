@@ -49,6 +49,10 @@
     "deleteTitle": "Confirm Delete",
     "loading": "Loading..."
   },
+  "validation": {
+    "required": "This field is required",
+    "between": "Value must be between {min} and {max}"
+  },
   "students": {
     "title": "Students",
     "subtitle": "Student profiles and group assignment",

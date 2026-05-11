@@ -4,10 +4,10 @@
       <Button :label="$t('common.list')" icon="pi pi-list" severity="secondary" @click="emit('list')" />
     </template>
 
-    <form class="grid grid-2" @submit.prevent="emit('submit')">
-      <AppInput v-model="form.code"            :label="$t('recitations.code')"          required />
+    <form class="grid grid-2" @submit.prevent="handleSubmit" novalidate>
+      <AppInput v-model="form.code"            :label="$t('recitations.code')"          required :error="errors.code" />
       <AppDatePicker v-model="form.recitationDate" :label="$t('recitations.recitationDate')"    />
-      <AppSelect v-model="form.studentId"      :label="$t('recitations.student')">
+      <AppSelect v-model="form.studentId"      :label="$t('recitations.student')"       required :error="errors.studentId">
         <option value="">{{ $t("common.select") }} {{ $t("recitations.student") }}</option>
         <option v-for="student in students" :key="student.id" :value="student.id">{{ student.name }}</option>
       </AppSelect>
@@ -30,8 +30,17 @@
         @update:aya="form.toAya = $event"
       />
       <div class="app-field">
-        <label>{{ $t('recitations.grade') }}</label>
-        <input type="number" min="0" max="100" v-model.number="form.grade" />
+        <label for="recitation-grade">{{ $t('recitations.grade') }}</label>
+        <input
+          id="recitation-grade"
+          type="number"
+          min="0"
+          max="100"
+          v-model.number="form.grade"
+          :aria-invalid="errors.grade ? true : undefined"
+          :aria-describedby="errors.grade ? 'recitation-grade-err' : undefined"
+        />
+        <span v-if="errors.grade" id="recitation-grade-err" class="field-error" role="alert">{{ errors.grade }}</span>
       </div>
       <AppTextarea class="field-span-2" v-model="form.notes" :label="$t('recitations.notes')" rows="3" />
 
@@ -64,14 +73,18 @@
 </template>
 
 <script setup>
-import Button from 'primevue/button';
-import PageLayout from './PageLayout.vue';
-import AppInput from './AppInput.vue';
-import AppSelect from './AppSelect.vue';
-import AppDatePicker from './AppDatePicker.vue';
-import AppTextarea from './AppTextarea.vue';
-import AppSurahAyaPicker from './AppSurahAyaPicker.vue';
-import AppMistakeTypeSelect from './AppMistakeTypeSelect.vue';
+import { reactive } from "vue";
+import { useI18n } from "vue-i18n";
+import Button from "primevue/button";
+import PageLayout from "./PageLayout.vue";
+import AppInput from "./AppInput.vue";
+import AppSelect from "./AppSelect.vue";
+import AppDatePicker from "./AppDatePicker.vue";
+import AppTextarea from "./AppTextarea.vue";
+import AppSurahAyaPicker from "./AppSurahAyaPicker.vue";
+import AppMistakeTypeSelect from "./AppMistakeTypeSelect.vue";
+
+const { t } = useI18n();
 
 const props = defineProps({
   form:         { type: Object,  required: true },
@@ -80,10 +93,25 @@ const props = defineProps({
   submitting:   { type: Boolean, default: false },
 });
 
-const emit = defineEmits(['submit', 'cancel', 'list']);
+const emit = defineEmits(["submit", "cancel", "list"]);
+
+const errors = reactive({});
+
+function validate() {
+  errors.code      = props.form.code?.trim() ? undefined : t("validation.required");
+  errors.studentId = props.form.studentId    ? undefined : t("validation.required");
+  errors.grade     = (props.form.grade != null && (props.form.grade < 0 || props.form.grade > 100))
+    ? t("validation.between", { min: 0, max: 100 })
+    : undefined;
+  return !Object.values(errors).some(Boolean);
+}
+
+function handleSubmit() {
+  if (validate()) emit("submit");
+}
 
 function addMistake() {
-  props.form.mistakes.push({ mistakeTypeId: '', count: 1 });
+  props.form.mistakes.push({ mistakeTypeId: "", count: 1 });
 }
 </script>
 

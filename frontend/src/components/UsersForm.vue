@@ -4,10 +4,10 @@
       <Button :label="$t('common.list')" icon="pi pi-list" severity="secondary" @click="emit('list')" />
     </template>
 
-    <form class="grid grid-2" @submit.prevent="emit('submit')">
-      <AppInput v-model="form.name"     :label="$t('users.name')"     required />
+    <form class="grid grid-2" @submit.prevent="handleSubmit" novalidate>
+      <AppInput v-model="form.name"     :label="$t('users.name')"     required :error="errors.name" />
       <AppInput v-model="form.code"     :label="$t('users.code')"              />
-      <AppInput v-model="form.username" :label="$t('users.username')" required />
+      <AppInput v-model="form.username" :label="$t('users.username')" required :error="errors.username" />
       <AppSelect v-model="form.sheikhId" :label="$t('users.sheikh')">
         <option value="">{{ $t("users.selectSheikh") }}</option>
         <option v-for="sheikh in sheikhs" :key="sheikh.id" :value="sheikh.id">{{ sheikh.name }}</option>
@@ -18,6 +18,7 @@
         :label="$t('users.password')"
         type="password"
         required
+        :error="errors.password"
       />
       <div class="button-row">
         <Button type="submit" :label="form.id ? $t('common.save') : $t('common.create')" icon="pi pi-check" :loading="submitting" :disabled="submitting" />
@@ -27,8 +28,8 @@
 
     <template v-if="form.id">
       <hr class="section-divider" />
-      <form class="grid grid-2" @submit.prevent="submitChangePassword">
-        <AppInput v-model="newPassword" :label="$t('users.newPassword')" type="password" required />
+      <form class="grid grid-2" @submit.prevent="submitChangePassword" novalidate>
+        <AppInput v-model="newPassword" :label="$t('users.newPassword')" type="password" required :error="errors.newPassword" />
         <div class="button-row">
           <Button type="submit" :label="$t('users.changePassword')" icon="pi pi-lock" severity="secondary" :loading="submitting" :disabled="submitting" />
         </div>
@@ -38,25 +39,42 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import Button from 'primevue/button';
-import PageLayout from './PageLayout.vue';
-import AppInput from './AppInput.vue';
-import AppSelect from './AppSelect.vue';
+import { reactive, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import Button from "primevue/button";
+import PageLayout from "./PageLayout.vue";
+import AppInput from "./AppInput.vue";
+import AppSelect from "./AppSelect.vue";
 
-defineProps({
+const { t } = useI18n();
+
+const props = defineProps({
   form:       { type: Object,  required: true },
   sheikhs:    { type: Array,   default: () => [] },
   submitting: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(['submit', 'cancel', 'list', 'changePassword']);
+const emit = defineEmits(["submit", "cancel", "list", "changePassword"]);
 
-const newPassword = ref('');
+const newPassword = ref("");
+const errors = reactive({});
+
+function validate() {
+  errors.name     = props.form.name?.trim()     ? undefined : t("validation.required");
+  errors.username = props.form.username?.trim() ? undefined : t("validation.required");
+  errors.password = (!props.form.id && !props.form.password?.trim()) ? t("validation.required") : undefined;
+  return !Object.values(errors).some(Boolean);
+}
+
+function handleSubmit() {
+  if (validate()) emit("submit");
+}
 
 function submitChangePassword() {
-  emit('changePassword', newPassword.value);
-  newPassword.value = '';
+  errors.newPassword = newPassword.value?.trim() ? undefined : t("validation.required");
+  if (errors.newPassword) return;
+  emit("changePassword", newPassword.value);
+  newPassword.value = "";
 }
 </script>
 

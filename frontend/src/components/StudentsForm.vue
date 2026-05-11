@@ -12,8 +12,8 @@
       />
     </template>
 
-    <form class="grid grid-2" @submit.prevent="emit('submit')">
-      <AppInput v-model="form.name"              :label="$t('students.name')"        required />
+    <form class="grid grid-2" @submit.prevent="handleSubmit" novalidate>
+      <AppInput v-model="form.name"              :label="$t('students.name')"        required :error="errors.name" />
       <AppInput v-model="form.code"              :label="$t('students.code')"        required />
       <AppDatePicker v-model="form.birthDate"    :label="$t('students.birthDate')"            />
       <AppSelect v-model="form.gender"           :label="$t('students.gender')">
@@ -50,17 +50,32 @@
 </template>
 
 <script setup>
+import { reactive } from "vue";
+import { useI18n } from "vue-i18n";
 import Button from "primevue/button";
 import PageLayout from "./PageLayout.vue";
 import AppInput from "./AppInput.vue";
 import AppSelect from "./AppSelect.vue";
 import AppDatePicker from "./AppDatePicker.vue";
 
-defineProps({
+const { t } = useI18n();
+
+const props = defineProps({
   form:       { type: Object,  required: true },
   groups:     { type: Array,   default: () => [] },
   submitting: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["submit", "cancel", "list"]);
+
+const errors = reactive({});
+
+function validate() {
+  errors.name = props.form.name?.trim() ? undefined : t("validation.required");
+  return !Object.values(errors).some(Boolean);
+}
+
+function handleSubmit() {
+  if (validate()) emit("submit");
+}
 </script>

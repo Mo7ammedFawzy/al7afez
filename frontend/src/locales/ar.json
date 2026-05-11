@@ -49,6 +49,10 @@
     "deleteTitle": "تأكيد الحذف",
     "loading": "جاري التحميل..."
   },
+  "validation": {
+    "required": "هذا الحقل مطلوب",
+    "between": "يجب أن تكون القيمة بين {min} و {max}"
+  },
   "students": {
     "title": "الطلاب",
     "subtitle": "بيانات الطلاب وربطهم بالمجموعات",
