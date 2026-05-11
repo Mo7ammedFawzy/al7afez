@@ -4,9 +4,13 @@
       <div class="avatar">{{ initial }}</div>
       <h2 class="profile-name">{{ name }}</h2>
       <p class="profile-username">{{ username }}</p>
-      <button class="danger logout-btn" type="button" @click="logout">
-        {{ $t("login.logout") }}
-      </button>
+      <Button
+        class="logout-btn"
+        severity="danger"
+        :label="$t('login.logout')"
+        icon="pi pi-sign-out"
+        @click="logout"
+      />
     </section>
   </div>
 </template>
@@ -14,13 +18,14 @@
 <script setup>
 import { computed } from "vue";
 import { useRouter } from "vue-router";
+import Button from "primevue/button";
 
 const router = useRouter();
 
 const user = JSON.parse(localStorage.getItem("user") || "{}");
-const name = computed(() => user.name || "—");
+const name     = computed(() => user.name     || "—");
 const username = computed(() => user.username || "");
-const initial = computed(() => (user.name || "؟")[0]);
+const initial  = computed(() => (user.name || "؟")[0]);
 
 function logout() {
   localStorage.removeItem("token");
@@ -33,25 +38,25 @@ function logout() {
 .profile-wrap {
   display: flex;
   justify-content: center;
-  padding: 40px 16px;
+  padding: var(--space-10) var(--space-4);
 }
 
 .profile-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-3);
   width: 100%;
   max-width: 360px;
-  padding: 40px 32px;
+  padding: var(--space-10) var(--space-8);
 }
 
 .avatar {
   width: 88px;
   height: 88px;
   border-radius: 50%;
-  background: var(--accent-soft);
-  color: var(--accent);
+  background: var(--color-primary-100);
+  color: var(--color-primary-700);
   font-size: 2.4rem;
   font-weight: 700;
   display: flex;
@@ -61,19 +66,20 @@ function logout() {
 
 .profile-name {
   margin: 0;
-  font-size: 1.4rem;
+  font-size: var(--text-xl);
   font-weight: 700;
 }
 
 .profile-username {
   margin: 0;
-  font-size: 0.95rem;
-  color: var(--ink-soft);
+  font-size: var(--text-sm);
+  color: var(--color-ink-soft);
   direction: ltr;
 }
 
 .logout-btn {
-  margin-top: 28px;
+  margin-top: var(--space-6);
   width: 100%;
+  justify-content: center;
 }
 </style>

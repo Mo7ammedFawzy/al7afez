@@ -35,9 +35,14 @@
           />
           <span class="user-name">{{ userName }}</span>
         </RouterLink>
-        <button class="logout-btn" :title="$t('login.logout')" @click="logout">
-          <span class="pi pi-sign-out" />
-        </button>
+        <Button
+          icon="pi pi-sign-out"
+          text
+          rounded
+          class="logout-btn"
+          :aria-label="$t('login.logout')"
+          @click="logout"
+        />
       </div>
     </aside>
 
@@ -52,6 +57,7 @@ import { computed } from "vue";
 import { useRoute, useRouter, RouterLink, RouterView } from "vue-router";
 import { useI18n } from "vue-i18n";
 import Avatar from "primevue/avatar";
+import Button from "primevue/button";
 import Toast from "primevue/toast";
 import ConfirmDialog from "primevue/confirmdialog";
 
