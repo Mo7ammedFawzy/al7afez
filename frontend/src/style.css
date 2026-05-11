@@ -205,78 +205,6 @@ a {
   letter-spacing: -0.02em;
 }
 
-/* ── Page Header ─────────────────────────────────────────────────────────── */
-.page-header {
-  padding: var(--space-4) var(--space-5);
-  border-radius: var(--radius-xl);
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: var(--space-4);
-  align-items: center;
-  margin: 0 0 var(--space-4) 0;
-}
-
-.page-header-left {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  min-width: 0;
-}
-
-.page-header-left h2 {
-  margin: 0;
-  font-size: var(--text-xl);
-}
-
-.page-header-left .badge {
-  margin: 0;
-  padding: var(--space-1) var(--space-3);
-  font-size: var(--text-xs);
-}
-
-.page-header-right {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.page-header .notice {
-  grid-column: 1 / -1;
-  margin-top: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-}
-
-/* ── Overlay / Popup ─────────────────────────────────────────────────────── */
-.popup-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 31, 58, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-4);
-  z-index: 50;
-}
-
-.popup-card {
-  max-width: 420px;
-  width: 100%;
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
-  box-shadow: 0 20px 50px rgba(15, 31, 58, 0.18);
-  display: grid;
-  gap: var(--space-4);
-}
-
-.popup-card p {
-  margin: 0;
-  color: var(--color-ink);
-  line-height: var(--leading-normal);
-}
-
-.popup-card button {
-  justify-self: end;
-}
 
 /* ── Summary Grid ────────────────────────────────────────────────────────── */
 .summary-grid {
@@ -433,20 +361,11 @@ select[multiple] {
   font-size: var(--text-xs);
 }
 
-.table-row-active,
 .table tr:hover {
   background: var(--color-surface-raised);
 }
 
 /* ── Misc Utilities ──────────────────────────────────────────────────────── */
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  flex-wrap: wrap;
-}
-
 .small-muted {
   margin: 0;
   font-size: var(--text-sm);
