@@ -45,7 +45,9 @@
     "aya": "آية",
     "error": "خطأ",
     "saved": "تم الحفظ بنجاح",
-    "deleteConfirm": "هل تريد حذف هذا العنصر؟"
+    "deleteConfirm": "هل تريد حذف هذا العنصر؟",
+    "deleteTitle": "تأكيد الحذف",
+    "loading": "جاري التحميل..."
   },
   "students": {
     "title": "الطلاب",

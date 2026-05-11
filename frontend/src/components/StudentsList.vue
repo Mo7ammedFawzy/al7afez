@@ -7,6 +7,7 @@
     <AppTable
       :columns="columns"
       :items="items"
+      :loading="loading"
       :page="page"
       :totalPages="totalPages"
       @edit="emit('edit', $event)"
@@ -36,9 +37,10 @@ import AppTable from './AppTable.vue';
 const { t } = useI18n();
 
 defineProps({
-  items:      { type: Array,  default: () => [] },
-  page:       { type: Number, default: 0 },
-  totalPages: { type: Number, default: 1 },
+  items:      { type: Array,   default: () => [] },
+  loading:    { type: Boolean, default: false },
+  page:       { type: Number,  default: 0 },
+  totalPages: { type: Number,  default: 1 },
 });
 
 const emit = defineEmits(['edit', 'remove', 'changePage', 'new']);

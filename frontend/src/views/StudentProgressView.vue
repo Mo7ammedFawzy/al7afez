@@ -1,7 +1,9 @@
 <template>
   <PageLayout :title="studentName" icon="pi-chart-line">
     <template #actions>
+      <ProgressSpinner v-if="loading" style="width:28px;height:28px" strokeWidth="4" />
       <Button
+        v-else
         :label="$t('reports.backToReports')"
         icon="pi pi-list"
         severity="secondary"
@@ -9,25 +11,29 @@
       />
     </template>
 
-    <p v-if="groupInfo" class="student-meta">{{ groupInfo }}</p>
+    <p v-if="groupInfo && !loading" class="student-meta">{{ groupInfo }}</p>
+    <Skeleton v-else-if="loading" height="1rem" width="14rem" class="meta-skel" />
+  </PageLayout>
 
-    <div class="stat-cards">
-      <article class="card stat-card">
-        <span class="small-muted">{{ $t("reports.recitations") }}</span>
-        <strong>{{ totalPages > 0 || recitations.length ? recitations.length + (totalPages > 1 ? '+' : '') : 0 }}</strong>
-      </article>
-      <article class="card stat-card">
-        <span class="small-muted">{{ $t("reports.averageGrade") }}</span>
-        <strong>{{ avgGrade }}</strong>
-      </article>
-      <article class="card stat-card">
-        <span class="small-muted">{{ $t("reports.mistakes") }}</span>
-        <strong>{{ totalMistakes }}</strong>
-      </article>
-    </div>
+  <div class="stat-cards">
+    <article class="card stat-card">
+      <span class="small-muted">{{ $t("reports.recitations") }}</span>
+      <strong v-if="!loading">{{ recitations.length }}</strong>
+      <Skeleton v-else height="2rem" width="3rem" />
+    </article>
+    <article class="card stat-card">
+      <span class="small-muted">{{ $t("reports.averageGrade") }}</span>
+      <strong v-if="!loading">{{ avgGrade }}</strong>
+      <Skeleton v-else height="2rem" width="3rem" />
+    </article>
+    <article class="card stat-card">
+      <span class="small-muted">{{ $t("reports.mistakes") }}</span>
+      <strong v-if="!loading">{{ totalMistakes }}</strong>
+      <Skeleton v-else height="2rem" width="3rem" />
+    </article>
+  </div>
 
-    <h3 class="section-title">{{ $t("reports.history") }}</h3>
-
+  <PageLayout :title="$t('reports.history')" icon="pi-book">
     <table class="table">
       <thead>
         <tr>
@@ -40,24 +46,31 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="r in recitations" :key="r.id">
-          <td class="ltr">{{ r.recitationDate || "—" }}</td>
-          <td class="ltr">{{ rangeLabel(r) }}</td>
-          <td>{{ r.numberOfAyat ?? "—" }}</td>
-          <td>{{ r.grade ?? "—" }}</td>
-          <td>{{ r.totalMistakes }}</td>
-          <td>{{ topMistakesLabel(r.mistakes) }}</td>
-        </tr>
-        <tr v-if="!recitations.length">
-          <td colspan="6" class="empty-row">{{ $t("reports.noHistory") }}</td>
-        </tr>
+        <template v-if="loading">
+          <tr v-for="n in 5" :key="n">
+            <td v-for="i in 6" :key="i"><Skeleton height="1rem" /></td>
+          </tr>
+        </template>
+        <template v-else>
+          <tr v-for="r in recitations" :key="r.id">
+            <td class="ltr">{{ r.recitationDate || "—" }}</td>
+            <td class="ltr">{{ rangeLabel(r) }}</td>
+            <td>{{ r.numberOfAyat ?? "—" }}</td>
+            <td>{{ r.grade ?? "—" }}</td>
+            <td>{{ r.totalMistakes }}</td>
+            <td>{{ topMistakesLabel(r.mistakes) }}</td>
+          </tr>
+          <tr v-if="!recitations.length">
+            <td colspan="6" class="empty-row">{{ $t("reports.noHistory") }}</td>
+          </tr>
+        </template>
       </tbody>
     </table>
 
     <div class="pager">
-      <Button icon="pi pi-angle-right" severity="secondary" text rounded :disabled="page === 0" :title="$t('common.prev')" @click="changePage(-1)" />
+      <Button icon="pi pi-angle-right" severity="secondary" text rounded :disabled="page === 0 || loading" :title="$t('common.prev')" @click="changePage(-1)" />
       <span>{{ page + 1 }} / {{ totalPages || 1 }}</span>
-      <Button icon="pi pi-angle-left" severity="secondary" text rounded :disabled="page + 1 >= totalPages" :title="$t('common.next')" @click="changePage(1)" />
+      <Button icon="pi pi-angle-left" severity="secondary" text rounded :disabled="page + 1 >= totalPages || loading" :title="$t('common.next')" @click="changePage(1)" />
     </div>
   </PageLayout>
 </template>
@@ -68,6 +81,8 @@ import { useRoute, useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 import { useToast } from "primevue/usetoast";
 import Button from "primevue/button";
+import ProgressSpinner from "primevue/progressspinner";
+import Skeleton from "primevue/skeleton";
 import PageLayout from "../components/PageLayout.vue";
 import { apiGet } from "../services/api";
 import { SURAHS } from "../data/surahs.js";
@@ -81,6 +96,7 @@ const student = ref(null);
 const recitations = ref([]);
 const page = ref(0);
 const totalPages = ref(1);
+const loading = ref(false);
 const pageSize = 20;
 
 const studentName = computed(() => student.value?.name || t("reports.studentProgress"));
@@ -102,6 +118,7 @@ const totalMistakes = computed(() =>
 );
 
 async function load() {
+  loading.value = true;
   try {
     const studentId = route.params.id;
     const [studentData, recitationsData] = await Promise.all([
@@ -113,6 +130,8 @@ async function load() {
     totalPages.value = recitationsData.totalPages ?? 1;
   } catch (err) {
     toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -150,11 +169,8 @@ onMounted(load);
   margin: calc(var(--space-2) * -1) 0 0;
 }
 
-.section-title {
-  font-size: var(--text-base);
-  font-weight: 600;
-  color: var(--color-ink);
-  margin: 0;
+.meta-skel {
+  margin-top: calc(var(--space-2) * -1);
 }
 
 .empty-row {

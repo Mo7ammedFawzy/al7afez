@@ -10,6 +10,7 @@
   <MistakeTypesList
     v-else
     :items="items"
+    :loading="loading"
     :page="page"
     :totalPages="totalPages"
     @new="newType"
@@ -23,12 +24,14 @@
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "primevue/usetoast";
+import { useConfirm } from "primevue/useconfirm";
 import { apiDelete, apiGet, apiPost, apiPut } from "../services/api";
 import MistakeTypesForm from "../components/MistakeTypesForm.vue";
 import MistakeTypesList from "../components/MistakeTypesList.vue";
 
 const { t } = useI18n();
 const toast = useToast();
+const confirmDialog = useConfirm();
 
 const items = ref([]);
 const allTypes = ref([]);
@@ -36,6 +39,7 @@ const form = ref(emptyForm());
 const page = ref(0);
 const totalPages = ref(1);
 const showForm = ref(false);
+const loading = ref(false);
 const pageSize = 10;
 
 const parentOptions = computed(() => allTypes.value.filter(item => item.id !== form.value.id));
@@ -45,6 +49,7 @@ function emptyForm() {
 }
 
 async function load() {
+  loading.value = true;
   try {
     const [pagedData, allData] = await Promise.all([
       apiGet("/mistake-types", { page: page.value, size: pageSize }),
@@ -55,6 +60,8 @@ async function load() {
     allTypes.value = allData.content ?? allData;
   } catch (err) {
     toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -103,20 +110,30 @@ async function submit() {
   }
 }
 
-async function remove(type) {
+function remove(type) {
   if (!type?.id) return;
-  if (!confirm(t("mistakeTypes.deleteConfirm", { name: type.name }))) return;
-  try {
-    await apiDelete(`/mistake-types/${type.id}`);
-    if (form.value.id === type.id) showListView();
-    await load();
-    if (items.value.length === 0 && page.value > 0) {
-      page.value -= 1;
-      await load();
+  confirmDialog.require({
+    message: t("mistakeTypes.deleteConfirm", { name: type.name }),
+    header: t("common.deleteTitle"),
+    icon: "pi pi-exclamation-triangle",
+    acceptProps: { severity: "danger" },
+    rejectProps: { severity: "secondary", outlined: true },
+    acceptLabel: t("common.delete"),
+    rejectLabel: t("common.cancel"),
+    accept: async () => {
+      try {
+        await apiDelete(`/mistake-types/${type.id}`);
+        if (form.value.id === type.id) showListView();
+        await load();
+        if (items.value.length === 0 && page.value > 0) {
+          page.value -= 1;
+          await load();
+        }
+      } catch (err) {
+        toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
+      }
     }
-  } catch (err) {
-    toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
-  }
+  });
 }
 
 function changePage(delta) {

@@ -1,5 +1,6 @@
 <template>
-dev  <Toast position="top-left" />
+  <Toast position="top-left" />
+  <ConfirmDialog />
 
   <RouterView v-if="route.path === '/login'" />
 
@@ -52,6 +53,7 @@ import { useRoute, useRouter, RouterLink, RouterView } from "vue-router";
 import { useI18n } from "vue-i18n";
 import Avatar from "primevue/avatar";
 import Toast from "primevue/toast";
+import ConfirmDialog from "primevue/confirmdialog";
 
 const route  = useRoute();
 const router = useRouter();

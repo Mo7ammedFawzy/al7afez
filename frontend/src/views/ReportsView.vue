@@ -1,7 +1,8 @@
 <template>
   <PageLayout :title="$t('reports.title')" icon="pi-chart-bar">
     <template #actions>
-      <Button :label="$t('reports.refresh')" icon="pi pi-refresh" severity="secondary" @click="load" />
+      <ProgressSpinner v-if="loading" style="width:28px;height:28px" strokeWidth="4" />
+      <Button v-else :label="$t('reports.refresh')" icon="pi pi-refresh" severity="secondary" @click="load" />
     </template>
     <p class="small-muted">{{ $t("reports.subtitle") }}</p>
   </PageLayout>
@@ -9,36 +10,48 @@
   <div class="stat-cards">
     <article class="card stat-card">
       <span class="small-muted">{{ $t("reports.cards.students") }}</span>
-      <strong>{{ summary.totalStudents }}</strong>
+      <strong v-if="!loading">{{ summary.totalStudents }}</strong>
+      <Skeleton v-else height="2rem" width="3rem" />
     </article>
     <article class="card stat-card">
       <span class="small-muted">{{ $t("reports.cards.groups") }}</span>
-      <strong>{{ summary.totalGroups }}</strong>
+      <strong v-if="!loading">{{ summary.totalGroups }}</strong>
+      <Skeleton v-else height="2rem" width="3rem" />
     </article>
     <article class="card stat-card">
       <span class="small-muted">{{ $t("reports.cards.recitations") }}</span>
-      <strong>{{ summary.totalRecitations }}</strong>
+      <strong v-if="!loading">{{ summary.totalRecitations }}</strong>
+      <Skeleton v-else height="2rem" width="3rem" />
     </article>
     <article class="card stat-card">
       <span class="small-muted">{{ $t("reports.cards.mistakes") }}</span>
-      <strong>{{ summary.totalMistakes }}</strong>
+      <strong v-if="!loading">{{ summary.totalMistakes }}</strong>
+      <Skeleton v-else height="2rem" width="3rem" />
     </article>
     <article class="card stat-card">
       <span class="small-muted">{{ $t("reports.cards.averageGrade") }}</span>
-      <strong>{{ summary.averageGrade }}</strong>
+      <strong v-if="!loading">{{ summary.averageGrade }}</strong>
+      <Skeleton v-else height="2rem" width="3rem" />
     </article>
   </div>
 
   <PageLayout :title="$t('reports.topMistakes')" icon="pi-exclamation-triangle">
     <p class="small-muted">{{ $t("reports.topMistakesHelp") }}</p>
-    <p v-if="overview.topMistakes.length === 0" class="notice">{{ $t("reports.noData") }}</p>
-    <div v-else class="pill-list">
-      <div v-for="mistake in overview.topMistakes" :key="mistake.id" class="pill-card">
-        <strong>{{ mistake.name }}</strong>
-        <span>{{ mistake.count }} {{ $t("reports.occurrences") }}</span>
-        <small>{{ mistake.share }}%</small>
+    <template v-if="loading">
+      <div class="pill-list">
+        <Skeleton v-for="n in 4" :key="n" height="3.5rem" class="pill-skel" />
       </div>
-    </div>
+    </template>
+    <template v-else>
+      <p v-if="overview.topMistakes.length === 0" class="notice">{{ $t("reports.noData") }}</p>
+      <div v-else class="pill-list">
+        <div v-for="mistake in overview.topMistakes" :key="mistake.id" class="pill-card">
+          <strong>{{ mistake.name }}</strong>
+          <span>{{ mistake.count }} {{ $t("reports.occurrences") }}</span>
+          <small>{{ mistake.share }}%</small>
+        </div>
+      </div>
+    </template>
   </PageLayout>
 
   <PageLayout :title="$t('reports.byStudent')" icon="pi-users">
@@ -55,22 +68,29 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in overview.students" :key="`student-${item.id}`">
-          <td>
-            <RouterLink :to="`/students/${item.id}/progress`" class="entity-link">
-              {{ item.name }}
-            </RouterLink>
-          </td>
-          <td>{{ item.secondaryLabel }}</td>
-          <td>{{ item.recitationCount }}</td>
-          <td>{{ item.mistakeCount }}</td>
-          <td>{{ item.averageGrade }}</td>
-          <td class="ltr">{{ item.latestRecitationDate || "—" }}</td>
-          <td>{{ topMistakesLabel(item.topMistakes) }}</td>
-        </tr>
-        <tr v-if="!overview.students.length">
-          <td colspan="7" class="empty-row">{{ $t("reports.noData") }}</td>
-        </tr>
+        <template v-if="loading">
+          <tr v-for="n in 4" :key="n">
+            <td v-for="i in 7" :key="i"><Skeleton height="1rem" /></td>
+          </tr>
+        </template>
+        <template v-else>
+          <tr v-for="item in overview.students" :key="`student-${item.id}`">
+            <td>
+              <RouterLink :to="`/students/${item.id}/progress`" class="entity-link">
+                {{ item.name }}
+              </RouterLink>
+            </td>
+            <td>{{ item.secondaryLabel }}</td>
+            <td>{{ item.recitationCount }}</td>
+            <td>{{ item.mistakeCount }}</td>
+            <td>{{ item.averageGrade }}</td>
+            <td class="ltr">{{ item.latestRecitationDate || "—" }}</td>
+            <td>{{ topMistakesLabel(item.topMistakes) }}</td>
+          </tr>
+          <tr v-if="!overview.students.length">
+            <td colspan="7" class="empty-row">{{ $t("reports.noData") }}</td>
+          </tr>
+        </template>
       </tbody>
     </table>
   </PageLayout>
@@ -89,18 +109,25 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in overview.groups" :key="`group-${item.id}`">
-          <td>{{ item.name }}</td>
-          <td>{{ item.secondaryLabel }}</td>
-          <td>{{ item.recitationCount }}</td>
-          <td>{{ item.mistakeCount }}</td>
-          <td>{{ item.averageGrade }}</td>
-          <td class="ltr">{{ item.latestRecitationDate || "—" }}</td>
-          <td>{{ topMistakesLabel(item.topMistakes) }}</td>
-        </tr>
-        <tr v-if="!overview.groups.length">
-          <td colspan="7" class="empty-row">{{ $t("reports.noData") }}</td>
-        </tr>
+        <template v-if="loading">
+          <tr v-for="n in 3" :key="n">
+            <td v-for="i in 7" :key="i"><Skeleton height="1rem" /></td>
+          </tr>
+        </template>
+        <template v-else>
+          <tr v-for="item in overview.groups" :key="`group-${item.id}`">
+            <td>{{ item.name }}</td>
+            <td>{{ item.secondaryLabel }}</td>
+            <td>{{ item.recitationCount }}</td>
+            <td>{{ item.mistakeCount }}</td>
+            <td>{{ item.averageGrade }}</td>
+            <td class="ltr">{{ item.latestRecitationDate || "—" }}</td>
+            <td>{{ topMistakesLabel(item.topMistakes) }}</td>
+          </tr>
+          <tr v-if="!overview.groups.length">
+            <td colspan="7" class="empty-row">{{ $t("reports.noData") }}</td>
+          </tr>
+        </template>
       </tbody>
     </table>
   </PageLayout>
@@ -119,18 +146,25 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in overview.levels" :key="`level-${item.id}`">
-          <td>{{ item.name }}</td>
-          <td>{{ item.secondaryLabel }}</td>
-          <td>{{ item.recitationCount }}</td>
-          <td>{{ item.mistakeCount }}</td>
-          <td>{{ item.averageGrade }}</td>
-          <td class="ltr">{{ item.latestRecitationDate || "—" }}</td>
-          <td>{{ topMistakesLabel(item.topMistakes) }}</td>
-        </tr>
-        <tr v-if="!overview.levels.length">
-          <td colspan="7" class="empty-row">{{ $t("reports.noData") }}</td>
-        </tr>
+        <template v-if="loading">
+          <tr v-for="n in 3" :key="n">
+            <td v-for="i in 7" :key="i"><Skeleton height="1rem" /></td>
+          </tr>
+        </template>
+        <template v-else>
+          <tr v-for="item in overview.levels" :key="`level-${item.id}`">
+            <td>{{ item.name }}</td>
+            <td>{{ item.secondaryLabel }}</td>
+            <td>{{ item.recitationCount }}</td>
+            <td>{{ item.mistakeCount }}</td>
+            <td>{{ item.averageGrade }}</td>
+            <td class="ltr">{{ item.latestRecitationDate || "—" }}</td>
+            <td>{{ topMistakesLabel(item.topMistakes) }}</td>
+          </tr>
+          <tr v-if="!overview.levels.length">
+            <td colspan="7" class="empty-row">{{ $t("reports.noData") }}</td>
+          </tr>
+        </template>
       </tbody>
     </table>
   </PageLayout>
@@ -148,38 +182,49 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in overview.recentRecitations" :key="`recent-${item.id}`">
-          <td class="ltr">{{ item.recitationDate }}</td>
-          <td>
-            <RouterLink v-if="item.student?.id" :to="`/students/${item.student.id}/progress`" class="entity-link">
-              {{ item.student?.name || "—" }}
-            </RouterLink>
-            <span v-else>—</span>
-          </td>
-          <td>{{ item.group?.name || "—" }}</td>
-          <td>{{ item.level?.name || "—" }}</td>
-          <td>{{ item.totalMistakes }}</td>
-          <td>{{ item.grade ?? "—" }}</td>
-        </tr>
-        <tr v-if="!overview.recentRecitations.length">
-          <td colspan="6" class="empty-row">{{ $t("reports.noData") }}</td>
-        </tr>
+        <template v-if="loading">
+          <tr v-for="n in 5" :key="n">
+            <td v-for="i in 6" :key="i"><Skeleton height="1rem" /></td>
+          </tr>
+        </template>
+        <template v-else>
+          <tr v-for="item in overview.recentRecitations" :key="`recent-${item.id}`">
+            <td class="ltr">{{ item.recitationDate }}</td>
+            <td>
+              <RouterLink v-if="item.student?.id" :to="`/students/${item.student.id}/progress`" class="entity-link">
+                {{ item.student?.name || "—" }}
+              </RouterLink>
+              <span v-else>—</span>
+            </td>
+            <td>{{ item.group?.name || "—" }}</td>
+            <td>{{ item.level?.name || "—" }}</td>
+            <td>{{ item.totalMistakes }}</td>
+            <td>{{ item.grade ?? "—" }}</td>
+          </tr>
+          <tr v-if="!overview.recentRecitations.length">
+            <td colspan="6" class="empty-row">{{ $t("reports.noData") }}</td>
+          </tr>
+        </template>
       </tbody>
     </table>
   </PageLayout>
 </template>
 
 <script setup>
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "primevue/usetoast";
 import { RouterLink } from "vue-router";
 import Button from "primevue/button";
+import ProgressSpinner from "primevue/progressspinner";
+import Skeleton from "primevue/skeleton";
 import PageLayout from "../components/PageLayout.vue";
 import { apiGet } from "../services/api";
 
 const { t } = useI18n();
 const toast = useToast();
+
+const loading = ref(false);
 
 const overview = reactive({
   topMistakes: [],
@@ -198,6 +243,7 @@ const summary = reactive({
 });
 
 async function load() {
+  loading.value = true;
   try {
     const data = await apiGet("/reports/overview");
     Object.assign(summary, data.summary || {});
@@ -208,6 +254,8 @@ async function load() {
     overview.recentRecitations = data.recentRecitations || [];
   } catch (err) {
     toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -235,5 +283,9 @@ onMounted(load);
 
 .entity-link:hover {
   text-decoration: underline;
+}
+
+.pill-skel {
+  border-radius: var(--radius-md);
 }
 </style>

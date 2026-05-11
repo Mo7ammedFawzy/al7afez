@@ -9,6 +9,7 @@
   <LevelsList
     v-else
     :items="items"
+    :loading="loading"
     :page="page"
     :totalPages="totalPages"
     @new="newLevel"
@@ -22,18 +23,21 @@
 import { onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "primevue/usetoast";
+import { useConfirm } from "primevue/useconfirm";
 import { apiDelete, apiGet, apiPost, apiPut } from "../services/api";
 import LevelsForm from "../components/LevelsForm.vue";
 import LevelsList from "../components/LevelsList.vue";
 
 const { t } = useI18n();
 const toast = useToast();
+const confirmDialog = useConfirm();
 
 const items = ref([]);
 const form = ref(emptyForm());
 const page = ref(0);
 const totalPages = ref(1);
 const showForm = ref(false);
+const loading = ref(false);
 const pageSize = 10;
 
 function emptyForm() {
@@ -41,12 +45,15 @@ function emptyForm() {
 }
 
 async function load() {
+  loading.value = true;
   try {
     const data = await apiGet("/levels", { page: page.value, size: pageSize });
     items.value = data.content ?? data;
     totalPages.value = data.totalPages ?? 1;
   } catch (err) {
     toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
+  } finally {
+    loading.value = false;
   }
 }
 
@@ -103,19 +110,29 @@ async function submit() {
   }
 }
 
-async function remove(level) {
+function remove(level) {
   if (!level?.id) return;
-  if (!confirm(t("common.deleteConfirm"))) return;
-  try {
-    await apiDelete(`/levels/${level.id}`);
-    await load();
-    if (items.value.length === 0 && page.value > 0) {
-      page.value -= 1;
-      await load();
+  confirmDialog.require({
+    message: t("common.deleteConfirm"),
+    header: t("common.deleteTitle"),
+    icon: "pi pi-exclamation-triangle",
+    acceptProps: { severity: "danger" },
+    rejectProps: { severity: "secondary", outlined: true },
+    acceptLabel: t("common.delete"),
+    rejectLabel: t("common.cancel"),
+    accept: async () => {
+      try {
+        await apiDelete(`/levels/${level.id}`);
+        await load();
+        if (items.value.length === 0 && page.value > 0) {
+          page.value -= 1;
+          await load();
+        }
+      } catch (err) {
+        toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
+      }
     }
-  } catch (err) {
-    toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
-  }
+  });
 }
 
 function changePage(delta) {

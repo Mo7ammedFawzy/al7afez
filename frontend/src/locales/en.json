@@ -45,7 +45,9 @@
     "aya": "Aya",
     "error": "Error",
     "saved": "Saved successfully",
-    "deleteConfirm": "Are you sure you want to delete this item?"
+    "deleteConfirm": "Are you sure you want to delete this item?",
+    "deleteTitle": "Confirm Delete",
+    "loading": "Loading..."
   },
   "students": {
     "title": "Students",
