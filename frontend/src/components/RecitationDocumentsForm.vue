@@ -11,10 +11,12 @@
         <option value="">{{ $t("common.select") }} {{ $t("recitations.student") }}</option>
         <option v-for="student in students" :key="student.id" :value="student.id">{{ student.name }}</option>
       </AppSelect>
-      <div class="app-field">
-        <label>{{ $t('recitations.numberOfAyat') }}</label>
-        <input type="number" min="1" v-model.number="form.numberOfAyat" />
-      </div>
+      <AppInput
+        type="number"
+        min="1"
+        :label="$t('recitations.numberOfAyat')"
+        v-model.number="form.numberOfAyat"
+      />
       <AppSurahAyaPicker
         :label="$t('recitations.fromSurah')"
         :surah="form.fromSurah"
@@ -29,19 +31,14 @@
         @update:surah="form.toSurah = $event"
         @update:aya="form.toAya = $event"
       />
-      <div class="app-field">
-        <label for="recitation-grade">{{ $t('recitations.grade') }}</label>
-        <input
-          id="recitation-grade"
-          type="number"
-          min="0"
-          max="100"
-          v-model.number="form.grade"
-          :aria-invalid="errors.grade ? true : undefined"
-          :aria-describedby="errors.grade ? 'recitation-grade-err' : undefined"
-        />
-        <span v-if="errors.grade" id="recitation-grade-err" class="field-error" role="alert">{{ errors.grade }}</span>
-      </div>
+      <AppInput
+        type="number"
+        min="0"
+        max="10"
+        :label="$t('recitations.grade')"
+        :error="errors.grade"
+        v-model.number="form.grade"
+      />
       <AppTextarea class="field-span-2" v-model="form.notes" :label="$t('recitations.notes')" rows="3" />
 
       <div class="field-span-2 mistake-section">
@@ -100,8 +97,8 @@ const errors = reactive({});
 function validate() {
   errors.code      = props.form.code?.trim() ? undefined : t("validation.required");
   errors.studentId = props.form.studentId    ? undefined : t("validation.required");
-  errors.grade     = (props.form.grade != null && (props.form.grade < 0 || props.form.grade > 100))
-    ? t("validation.between", { min: 0, max: 100 })
+  errors.grade     = (props.form.grade != null && (props.form.grade < 0 || props.form.grade > 10))
+    ? t("validation.between", { min: 0, max: 10 })
     : undefined;
   return !Object.values(errors).some(Boolean);
 }

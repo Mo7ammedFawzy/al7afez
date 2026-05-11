@@ -21,10 +21,12 @@
         @update:surah="form.toSurah = $event"
         @update:aya="form.toAya = $event"
       />
-      <div class="app-field">
-        <label>{{ $t('levels.ayatPerSession') }}</label>
-        <input type="number" min="1" v-model.number="form.numberOfAyatPerSession" />
-      </div>
+      <AppInput
+        type="number"
+        min="1"
+        :label="$t('levels.ayatPerSession')"
+        v-model.number="form.numberOfAyatPerSession"
+      />
       <div class="button-row">
         <Button type="submit" :label="form.id ? $t('common.save') : $t('common.create')" icon="pi pi-check" :loading="submitting" :disabled="submitting" />
         <Button type="button" :label="$t('common.cancel')" icon="pi pi-times" severity="secondary" :disabled="submitting" @click="emit('cancel')" />
