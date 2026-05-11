@@ -33,12 +33,15 @@
           type="submit"
           :label="form.id ? $t('common.save') : $t('common.create')"
           icon="pi pi-check"
+          :loading="submitting"
+          :disabled="submitting"
         />
         <Button
           type="button"
           :label="$t('common.cancel')"
           icon="pi pi-times"
           severity="secondary"
+          :disabled="submitting"
           @click="emit('cancel')"
         />
       </div>
@@ -54,8 +57,9 @@ import AppSelect from "./AppSelect.vue";
 import AppDatePicker from "./AppDatePicker.vue";
 
 defineProps({
-  form:   { type: Object, required: true },
-  groups: { type: Array,  default: () => [] },
+  form:       { type: Object,  required: true },
+  groups:     { type: Array,   default: () => [] },
+  submitting: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["submit", "cancel", "list"]);

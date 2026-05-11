@@ -3,6 +3,7 @@
     v-if="showForm"
     :form="form"
     :parentOptions="parentOptions"
+    :submitting="submitting"
     @submit="submit"
     @cancel="showListView"
     @list="showListView"
@@ -40,6 +41,7 @@ const page = ref(0);
 const totalPages = ref(1);
 const showForm = ref(false);
 const loading = ref(false);
+const submitting = ref(false);
 const pageSize = 10;
 
 const parentOptions = computed(() => allTypes.value.filter(item => item.id !== form.value.id));
@@ -94,6 +96,7 @@ function buildPayload() {
 }
 
 async function submit() {
+  submitting.value = true;
   try {
     const payload = buildPayload();
     if (form.value.id) {
@@ -107,6 +110,8 @@ async function submit() {
     toast.add({ severity: "success", summary: t("common.saved"), life: 2000 });
   } catch (err) {
     toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
+  } finally {
+    submitting.value = false;
   }
 }
 

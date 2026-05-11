@@ -16,8 +16,8 @@
         <option v-for="sheikh in sheikhs" :key="sheikh.id" :value="sheikh.id">{{ sheikh.name }}</option>
       </AppSelect>
       <div class="button-row">
-        <Button type="submit" :label="form.id ? $t('common.save') : $t('common.create')" icon="pi pi-check" />
-        <Button type="button" :label="$t('common.cancel')" icon="pi pi-times" severity="secondary" @click="emit('cancel')" />
+        <Button type="submit" :label="form.id ? $t('common.save') : $t('common.create')" icon="pi pi-check" :loading="submitting" :disabled="submitting" />
+        <Button type="button" :label="$t('common.cancel')" icon="pi pi-times" severity="secondary" :disabled="submitting" @click="emit('cancel')" />
       </div>
     </form>
   </PageLayout>
@@ -30,9 +30,10 @@ import AppInput from './AppInput.vue';
 import AppSelect from './AppSelect.vue';
 
 defineProps({
-  form:    { type: Object, required: true },
-  levels:  { type: Array,  default: () => [] },
-  sheikhs: { type: Array,  default: () => [] },
+  form:       { type: Object,  required: true },
+  levels:     { type: Array,   default: () => [] },
+  sheikhs:    { type: Array,   default: () => [] },
+  submitting: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['submit', 'cancel', 'list']);
