@@ -1,17 +1,28 @@
 <template>
   <div class="app-field">
-    <label v-if="label">{{ label }}<span v-if="required" class="req">*</span></label>
-    <select v-bind="$attrs" :required="required" v-model="internalValue">
+    <label v-if="label" :for="uid">
+      {{ label }}<span v-if="required" class="req" aria-hidden="true">*</span>
+    </label>
+    <select
+      v-bind="$attrs"
+      :id="uid"
+      :required="required"
+      :aria-invalid="error ? true : undefined"
+      :aria-describedby="error ? `${uid}-err` : undefined"
+      v-model="internalValue"
+    >
       <slot />
     </select>
-    <span v-if="error" class="field-error">{{ error }}</span>
+    <span v-if="error" :id="`${uid}-err`" class="field-error" role="alert">{{ error }}</span>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, getCurrentInstance } from "vue";
 
 defineOptions({ inheritAttrs: false });
+
+const uid = `app-field-${getCurrentInstance().uid}`;
 
 const props = defineProps({
   label:      { type: String,  default: undefined },
