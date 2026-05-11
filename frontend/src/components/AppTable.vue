@@ -26,7 +26,7 @@
                   severity="secondary"
                   text
                   rounded
-                  :title="$t('common.edit')"
+                  :aria-label="$t('common.edit')"
                   @click="emit('edit', item)"
                 />
                 <Button
@@ -34,7 +34,7 @@
                   severity="danger"
                   text
                   rounded
-                  :title="$t('common.delete')"
+                  :aria-label="$t('common.delete')"
                   @click="emit('remove', item)"
                 />
               </div>
