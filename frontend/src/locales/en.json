@@ -18,7 +18,11 @@
     "mistakeTypes": "Mistake Types",
     "recitations": "Recitation Documents",
     "users": "Users",
-    "profile": "Profile"
+    "profile": "Profile",
+    "group": {
+      "masterData": "Master Data",
+      "admin": "Administration"
+    }
   },
   "badge": {
     "master": "MasterFile",

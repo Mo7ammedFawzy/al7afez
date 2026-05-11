@@ -14,15 +14,18 @@
 
       <!-- Nav -->
       <nav class="nav" role="navigation">
-        <RouterLink
-          v-for="item in navItems"
-          :key="item.to"
-          :to="item.to"
-          class="nav-link"
-        >
-          <span :class="['nav-icon', 'pi', item.icon]" />
-          <span class="nav-label">{{ $t(item.label) }}</span>
-        </RouterLink>
+        <template v-for="group in navGroups" :key="group.label ?? 'top'">
+          <p v-if="group.label" class="nav-group-label">{{ $t(group.label) }}</p>
+          <RouterLink
+            v-for="item in group.items"
+            :key="item.to"
+            :to="item.to"
+            class="nav-link"
+          >
+            <span :class="['nav-icon', 'pi', item.icon]" />
+            <span class="nav-label">{{ $t(item.label) }}</span>
+          </RouterLink>
+        </template>
       </nav>
 
       <!-- User chip + logout -->
@@ -65,15 +68,29 @@ const route  = useRoute();
 const router = useRouter();
 const { t }  = useI18n();
 
-const navItems = [
-  { to: "/reports",       icon: "pi-chart-bar",  label: "nav.reports"      },
-  { to: "/recitations",   icon: "pi-book",        label: "nav.recitations"  },
-  { to: "/students",      icon: "pi-users",       label: "nav.students"     },
-  { to: "/sheikhs",       icon: "pi-user",        label: "nav.sheikhs"      },
-  { to: "/levels",        icon: "pi-list",        label: "nav.levels"       },
-  { to: "/groups",        icon: "pi-sitemap",     label: "nav.groups"       },
-  { to: "/mistake-types", icon: "pi-tag",         label: "nav.mistakeTypes" },
-  { to: "/users",         icon: "pi-shield",      label: "nav.users"        },
+const navGroups = [
+  {
+    items: [
+      { to: "/reports",     icon: "pi-chart-bar", label: "nav.reports"     },
+      { to: "/recitations", icon: "pi-book",       label: "nav.recitations" },
+    ],
+  },
+  {
+    label: "nav.group.masterData",
+    items: [
+      { to: "/students",      icon: "pi-users",   label: "nav.students"     },
+      { to: "/sheikhs",       icon: "pi-user",    label: "nav.sheikhs"      },
+      { to: "/levels",        icon: "pi-list",    label: "nav.levels"       },
+      { to: "/groups",        icon: "pi-sitemap", label: "nav.groups"       },
+      { to: "/mistake-types", icon: "pi-tag",     label: "nav.mistakeTypes" },
+    ],
+  },
+  {
+    label: "nav.group.admin",
+    items: [
+      { to: "/users", icon: "pi-shield", label: "nav.users" },
+    ],
+  },
 ];
 
 const user        = computed(() => JSON.parse(localStorage.getItem("user") || "{}"));
@@ -88,6 +105,16 @@ function logout() {
 </script>
 
 <style scoped>
+/* ── Nav group labels ────────────────────────────────────────────────────── */
+.nav-group-label {
+  margin: var(--space-3) 0 0;
+  padding: var(--space-3) var(--space-4) var(--space-1);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.38);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 /* ── Sidebar brand ───────────────────────────────────────────────────────── */
 .sidebar-brand {
   display: flex;
