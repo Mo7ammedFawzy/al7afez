@@ -129,6 +129,40 @@ a {
   .app-shell {
     grid-template-columns: 1fr;
     padding: var(--space-3);
+    gap: var(--space-3);
+  }
+
+  .sidebar {
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    gap: var(--space-3);
+    height: auto;
+  }
+
+  .content {
+    gap: var(--space-4);
+  }
+
+  .card {
+    padding: var(--space-4);
+  }
+}
+
+@media (max-width: 600px) {
+  .app-shell {
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
+
+  .content {
+    gap: var(--space-3);
+  }
+
+  .card {
+    padding: var(--space-3);
+    border-radius: var(--radius-lg);
   }
 }
 
@@ -340,6 +374,11 @@ select[multiple] {
 }
 
 /* ── Table ───────────────────────────────────────────────────────────────── */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;

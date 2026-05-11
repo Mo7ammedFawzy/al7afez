@@ -34,7 +34,7 @@
   </div>
 
   <PageLayout :title="$t('reports.history')" icon="pi-book">
-    <table class="table">
+    <div class="table-scroll"><table class="table">
       <thead>
         <tr>
           <th>{{ $t("recitations.recitationDate") }}</th>
@@ -65,7 +65,7 @@
           </tr>
         </template>
       </tbody>
-    </table>
+    </table></div>
 
     <div class="pager">
       <Button icon="pi pi-angle-right" severity="secondary" text rounded :disabled="page === 0 || loading" :title="$t('common.prev')" @click="changePage(-1)" />

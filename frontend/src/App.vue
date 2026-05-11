@@ -259,4 +259,67 @@ function logout() {
   color: #fca5a5;
   transform: none;
 }
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 960px) {
+  .sidebar-brand {
+    padding-bottom: 0;
+    border-bottom: none;
+    padding-inline-end: var(--space-3);
+    border-inline-end: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+  }
+
+  .nav {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    flex: 1;
+    gap: var(--space-1);
+    align-items: center;
+  }
+
+  .nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-group-label {
+    display: none;
+  }
+
+  .nav-link {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .sidebar-footer {
+    padding-top: 0;
+    border-top: none;
+    padding-inline-start: var(--space-3);
+    border-inline-start: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .brand {
+    display: none;
+  }
+
+  .nav-label {
+    display: none;
+  }
+
+  .nav-link {
+    padding: var(--space-2);
+    justify-content: center;
+  }
+
+  .user-name {
+    display: none;
+  }
+}
 </style>

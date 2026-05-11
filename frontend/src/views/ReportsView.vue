@@ -55,7 +55,7 @@
   </PageLayout>
 
   <PageLayout :title="$t('reports.byStudent')" icon="pi-users">
-    <table class="table">
+    <div class="table-scroll"><table class="table">
       <thead>
         <tr>
           <th>{{ $t("students.name") }}</th>
@@ -92,11 +92,11 @@
           </tr>
         </template>
       </tbody>
-    </table>
+    </table></div>
   </PageLayout>
 
   <PageLayout :title="$t('reports.byGroup')" icon="pi-sitemap">
-    <table class="table">
+    <div class="table-scroll"><table class="table">
       <thead>
         <tr>
           <th>{{ $t("groups.name") }}</th>
@@ -129,11 +129,11 @@
           </tr>
         </template>
       </tbody>
-    </table>
+    </table></div>
   </PageLayout>
 
   <PageLayout :title="$t('reports.byLevel')" icon="pi-list">
-    <table class="table">
+    <div class="table-scroll"><table class="table">
       <thead>
         <tr>
           <th>{{ $t("levels.name") }}</th>
@@ -166,11 +166,11 @@
           </tr>
         </template>
       </tbody>
-    </table>
+    </table></div>
   </PageLayout>
 
   <PageLayout :title="$t('reports.recentRecitations')" icon="pi-book">
-    <table class="table">
+    <div class="table-scroll"><table class="table">
       <thead>
         <tr>
           <th>{{ $t("recitations.recitationDate") }}</th>
@@ -206,7 +206,7 @@
           </tr>
         </template>
       </tbody>
-    </table>
+    </table></div>
   </PageLayout>
 </template>
 

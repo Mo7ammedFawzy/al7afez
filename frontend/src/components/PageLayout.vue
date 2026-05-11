@@ -73,4 +73,16 @@ defineProps({
   gap: var(--space-2);
   flex-shrink: 0;
 }
+
+@media (max-width: 600px) {
+  .page-layout {
+    padding: var(--space-4);
+    gap: var(--space-4);
+    border-radius: var(--radius-lg);
+  }
+
+  .page-layout-heading {
+    font-size: var(--text-lg);
+  }
+}
 </style>

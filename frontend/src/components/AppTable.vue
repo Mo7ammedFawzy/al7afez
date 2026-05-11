@@ -1,5 +1,6 @@
 <template>
   <div>
+    <div class="table-scroll">
     <table class="table">
       <thead>
         <tr>
@@ -51,6 +52,7 @@
         </template>
       </tbody>
     </table>
+    </div>
 
     <div class="pager">
       <span v-if="totalItems > 0" class="pager-range">
