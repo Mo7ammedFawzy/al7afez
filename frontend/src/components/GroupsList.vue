@@ -10,6 +10,7 @@
       :loading="loading"
       :page="page"
       :totalPages="totalPages"
+      :totalItems="totalItems"
       @edit="emit('edit', $event)"
       @remove="emit('remove', $event)"
       @changePage="emit('changePage', $event)"
@@ -38,6 +39,7 @@ defineProps({
   loading:    { type: Boolean, default: false },
   page:       { type: Number,  default: 0 },
   totalPages: { type: Number,  default: 1 },
+  totalItems: { type: Number,  default: 0 },
 });
 
 const emit = defineEmits(['edit', 'remove', 'changePage', 'new']);

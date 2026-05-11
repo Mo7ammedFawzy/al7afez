@@ -44,6 +44,7 @@
     "cancel": "إلغاء",
     "list": "القائمة",
     "noData": "لا توجد بيانات",
+    "showingRange": "عرض {from}–{to} من {total}",
     "selectSurah": "اختر السورة",
     "search": "بحث",
     "aya": "آية",

@@ -44,6 +44,7 @@
     "cancel": "Cancel",
     "list": "List",
     "noData": "No data available",
+    "showingRange": "Showing {from}–{to} of {total}",
     "selectSurah": "Select surah",
     "search": "Search",
     "aya": "Aya",

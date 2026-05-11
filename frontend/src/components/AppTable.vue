@@ -53,23 +53,26 @@
     </table>
 
     <div class="pager">
+      <span v-if="totalItems > 0" class="pager-range">
+        {{ $t('common.showingRange', { from: rangeFrom, to: rangeTo, total: totalItems }) }}
+      </span>
       <Button
         icon="pi pi-angle-right"
         severity="secondary"
         text
         rounded
         :disabled="page === 0 || loading"
-        :title="$t('common.prev')"
+        :aria-label="$t('common.prev')"
         @click="emit('changePage', -1)"
       />
-      <span>{{ page + 1 }} / {{ totalPages || 1 }}</span>
+      <span class="pager-pages">{{ page + 1 }} / {{ totalPages || 1 }}</span>
       <Button
         icon="pi pi-angle-left"
         severity="secondary"
         text
         rounded
         :disabled="page + 1 >= totalPages || loading"
-        :title="$t('common.next')"
+        :aria-label="$t('common.next')"
         @click="emit('changePage', 1)"
       />
     </div>
@@ -77,19 +80,25 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import Button from 'primevue/button';
 import Skeleton from 'primevue/skeleton';
 
-defineProps({
+const props = defineProps({
   columns:    { type: Array,   required: true },
   items:      { type: Array,   default: () => [] },
   loading:    { type: Boolean, default: false },
   page:       { type: Number,  default: 0 },
   totalPages: { type: Number,  default: 1 },
+  totalItems: { type: Number,  default: 0 },
+  pageSize:   { type: Number,  default: 10 },
   rowKey:     { type: String,  default: 'id' },
 });
 
 const emit = defineEmits(['edit', 'remove', 'changePage']);
+
+const rangeFrom = computed(() => props.totalItems === 0 ? 0 : props.page * props.pageSize + 1);
+const rangeTo   = computed(() => Math.min(props.page * props.pageSize + props.items.length, props.totalItems));
 </script>
 
 <style scoped>
@@ -110,6 +119,17 @@ const emit = defineEmits(['edit', 'remove', 'changePage']);
   gap: var(--space-3);
   padding: var(--space-12) var(--space-8);
   color: var(--color-ink-muted);
+}
+
+.pager-range {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+  flex: 1;
+}
+
+.pager-pages {
+  font-size: var(--text-sm);
+  color: var(--color-ink-soft);
 }
 
 .empty-icon {

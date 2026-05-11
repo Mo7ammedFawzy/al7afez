@@ -14,6 +14,7 @@
     :items="items"
     :loading="loading"
     :totalPages="totalPages"
+    :totalItems="totalItems"
     :page="page"
     @new="newGroup"
     @edit="edit"
@@ -44,6 +45,7 @@ const totalPages = ref(1);
 const showForm = ref(false);
 const loading = ref(false);
 const submitting = ref(false);
+const totalItems = ref(0);
 const pageSize = 10;
 
 function emptyForm() {
@@ -60,6 +62,7 @@ async function load() {
     ]);
     items.value = groupsData.content ?? groupsData;
     totalPages.value = groupsData.totalPages ?? 1;
+    totalItems.value = groupsData.totalElements ?? items.value.length;
     levels.value = levelsData.content ?? levelsData;
     sheikhs.value = sheikhsData.content ?? sheikhsData;
   } catch (err) {

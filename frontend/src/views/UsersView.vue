@@ -15,6 +15,7 @@
     :loading="loading"
     :page="page"
     :totalPages="totalPages"
+    :totalItems="totalItems"
     @new="newUser"
     @edit="edit"
     @remove="remove"
@@ -43,6 +44,7 @@ const totalPages = ref(1);
 const showForm = ref(false);
 const loading = ref(false);
 const submitting = ref(false);
+const totalItems = ref(0);
 const pageSize = 10;
 
 function emptyForm() {
@@ -58,6 +60,7 @@ async function load() {
     ]);
     items.value = usersData.content ?? usersData;
     totalPages.value = usersData.totalPages ?? 1;
+    totalItems.value = usersData.totalElements ?? items.value.length;
     sheikhs.value = sheikhsData.content ?? sheikhsData;
   } catch (err) {
     toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });

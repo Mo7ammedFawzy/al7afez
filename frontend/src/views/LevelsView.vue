@@ -13,6 +13,7 @@
     :loading="loading"
     :page="page"
     :totalPages="totalPages"
+    :totalItems="totalItems"
     @new="newLevel"
     @edit="edit"
     @remove="remove"
@@ -40,6 +41,7 @@ const totalPages = ref(1);
 const showForm = ref(false);
 const loading = ref(false);
 const submitting = ref(false);
+const totalItems = ref(0);
 const pageSize = 10;
 
 function emptyForm() {
@@ -52,6 +54,7 @@ async function load() {
     const data = await apiGet("/levels", { page: page.value, size: pageSize });
     items.value = data.content ?? data;
     totalPages.value = data.totalPages ?? 1;
+    totalItems.value = data.totalElements ?? items.value.length;
   } catch (err) {
     toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
   } finally {

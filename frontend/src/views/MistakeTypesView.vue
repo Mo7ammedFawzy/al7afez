@@ -14,6 +14,7 @@
     :loading="loading"
     :page="page"
     :totalPages="totalPages"
+    :totalItems="totalItems"
     @new="newType"
     @edit="edit"
     @remove="remove"
@@ -42,6 +43,7 @@ const totalPages = ref(1);
 const showForm = ref(false);
 const loading = ref(false);
 const submitting = ref(false);
+const totalItems = ref(0);
 const pageSize = 10;
 
 const parentOptions = computed(() => allTypes.value.filter(item => item.id !== form.value.id));
@@ -59,6 +61,7 @@ async function load() {
     ]);
     items.value = pagedData.content ?? pagedData;
     totalPages.value = pagedData.totalPages ?? 1;
+    totalItems.value = pagedData.totalElements ?? items.value.length;
     allTypes.value = allData.content ?? allData;
   } catch (err) {
     toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });

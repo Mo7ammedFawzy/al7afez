@@ -15,6 +15,7 @@
     :loading="loading"
     :page="page"
     :totalPages="totalPages"
+    :totalItems="totalItems"
     @new="newRecitation"
     @edit="edit"
     @remove="remove"
@@ -44,6 +45,7 @@ const totalPages = ref(1);
 const showForm = ref(false);
 const loading = ref(false);
 const submitting = ref(false);
+const totalItems = ref(0);
 const pageSize = 10;
 
 function emptyForm() {
@@ -64,6 +66,7 @@ async function load() {
     ]);
     items.value = recitationsData.content ?? recitationsData;
     totalPages.value = recitationsData.totalPages ?? 1;
+    totalItems.value = recitationsData.totalElements ?? items.value.length;
     students.value = studentsData.content ?? studentsData;
     mistakeTypes.value = mistakeTypesData.content ?? mistakeTypesData;
   } catch (err) {
