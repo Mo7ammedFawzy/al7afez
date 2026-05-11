@@ -143,6 +143,7 @@ function remove(student) {
     accept: async () => {
       try {
         await apiDelete(`/students/${student.id}`);
+        toast.add({ severity: "success", summary: t("common.deleted"), life: 2000 });
         await load();
         if (items.value.length === 0 && page.value > 0) {
           page.value -= 1;

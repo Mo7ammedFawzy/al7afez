@@ -45,6 +45,7 @@
     "aya": "Aya",
     "error": "Error",
     "saved": "Saved successfully",
+    "deleted": "Deleted successfully",
     "deleteConfirm": "Are you sure you want to delete this item?",
     "deleteTitle": "Confirm Delete",
     "loading": "Loading..."

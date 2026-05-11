@@ -155,6 +155,7 @@ function remove(recitation) {
     accept: async () => {
       try {
         await apiDelete(`/recitations/${recitation.id}`);
+        toast.add({ severity: "success", summary: t("common.deleted"), life: 2000 });
         await load();
         if (items.value.length === 0 && page.value > 0) {
           page.value -= 1;

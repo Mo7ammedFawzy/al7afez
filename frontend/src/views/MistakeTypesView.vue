@@ -128,6 +128,7 @@ function remove(type) {
     accept: async () => {
       try {
         await apiDelete(`/mistake-types/${type.id}`);
+        toast.add({ severity: "success", summary: t("common.deleted"), life: 2000 });
         if (form.value.id === type.id) showListView();
         await load();
         if (items.value.length === 0 && page.value > 0) {

@@ -144,6 +144,7 @@ function remove(user) {
     accept: async () => {
       try {
         await apiDelete(`/users/${user.id}`);
+        toast.add({ severity: "success", summary: t("common.deleted"), life: 2000 });
         await load();
         if (items.value.length === 0 && page.value > 0) {
           page.value -= 1;
