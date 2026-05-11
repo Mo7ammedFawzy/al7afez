@@ -63,4 +63,9 @@ public class RecitationService extends AbsDocumentFileService<RecitationDocument
                 .map(mappingService::toRecitationResponse)
                 .toList();
     }
+
+    public Page<RecitationResponse> getByStudentId(Long studentId, Pageable pageable) {
+        return recitationRepository.findByStudentIdDetailed(studentId, pageable)
+                .map(mappingService::toRecitationResponse);
+    }
 }

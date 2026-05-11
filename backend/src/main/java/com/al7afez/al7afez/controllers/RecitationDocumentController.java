@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,7 +28,13 @@ public class RecitationDocumentController {
     }
 
     @GetMapping
-    public Page<RecitationResponse> getAll(@PageableDefault(size = 10) Pageable pageable) {
+    public Page<RecitationResponse> getAll(
+            @RequestParam(required = false) Long studentId,
+            @PageableDefault(size = 10) Pageable pageable
+    ) {
+        if (studentId != null) {
+            return service.getByStudentId(studentId, pageable);
+        }
         return service.getAll(pageable);
     }
 

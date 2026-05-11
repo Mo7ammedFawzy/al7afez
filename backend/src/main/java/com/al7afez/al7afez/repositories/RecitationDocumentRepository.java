@@ -56,4 +56,15 @@ public interface RecitationDocumentRepository extends BaseRepository<RecitationD
     default List<RecitationDocument> findRecent(Pageable pageable) {
         return findByOrderByRecitationDateDescIdDesc(pageable);
     }
+
+    @Query("select r from RecitationDocument r where r.student.id = :studentId order by r.recitationDate desc, r.id desc")
+    @EntityGraph(attributePaths = {
+            "student",
+            "student.recitationGroup",
+            "student.recitationGroup.level",
+            "student.recitationGroup.sheikh",
+            "mistakes",
+            "mistakes.mistakeType"
+    })
+    Page<RecitationDocument> findByStudentIdDetailed(@Param("studentId") Long studentId, Pageable pageable);
 }

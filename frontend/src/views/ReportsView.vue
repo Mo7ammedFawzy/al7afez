@@ -1,16 +1,12 @@
 <template>
-  <section class="card">
-    <div class="section-header">
-      <div>
-        <h2>{{ $t("reports.title") }}</h2>
-        <p class="small-muted">{{ $t("reports.subtitle") }}</p>
-      </div>
-      <button class="secondary" type="button" @click="load">{{ $t("reports.refresh") }}</button>
-    </div>
-    <div v-if="error" class="notice">{{ error }}</div>
-  </section>
+  <PageLayout :title="$t('reports.title')" icon="pi-chart-bar">
+    <template #actions>
+      <Button :label="$t('reports.refresh')" icon="pi pi-refresh" severity="secondary" @click="load" />
+    </template>
+    <p class="small-muted">{{ $t("reports.subtitle") }}</p>
+  </PageLayout>
 
-  <section class="summary-grid">
+  <div class="stat-cards">
     <article class="card stat-card">
       <span class="small-muted">{{ $t("reports.cards.students") }}</span>
       <strong>{{ summary.totalStudents }}</strong>
@@ -31,16 +27,11 @@
       <span class="small-muted">{{ $t("reports.cards.averageGrade") }}</span>
       <strong>{{ summary.averageGrade }}</strong>
     </article>
-  </section>
+  </div>
 
-  <section class="card">
-    <div class="section-header">
-      <div>
-        <h2>{{ $t("reports.topMistakes") }}</h2>
-        <p class="small-muted">{{ $t("reports.topMistakesHelp") }}</p>
-      </div>
-    </div>
-    <div v-if="overview.topMistakes.length === 0" class="notice">{{ $t("reports.noData") }}</div>
+  <PageLayout :title="$t('reports.topMistakes')" icon="pi-exclamation-triangle">
+    <p class="small-muted">{{ $t("reports.topMistakesHelp") }}</p>
+    <p v-if="overview.topMistakes.length === 0" class="notice">{{ $t("reports.noData") }}</p>
     <div v-else class="pill-list">
       <div v-for="mistake in overview.topMistakes" :key="mistake.id" class="pill-card">
         <strong>{{ mistake.name }}</strong>
@@ -48,10 +39,9 @@
         <small>{{ mistake.share }}%</small>
       </div>
     </div>
-  </section>
+  </PageLayout>
 
-  <section class="card">
-    <h2>{{ $t("reports.byStudent") }}</h2>
+  <PageLayout :title="$t('reports.byStudent')" icon="pi-users">
     <table class="table">
       <thead>
         <tr>
@@ -66,20 +56,26 @@
       </thead>
       <tbody>
         <tr v-for="item in overview.students" :key="`student-${item.id}`">
-          <td>{{ item.name }}</td>
+          <td>
+            <RouterLink :to="`/students/${item.id}/progress`" class="entity-link">
+              {{ item.name }}
+            </RouterLink>
+          </td>
           <td>{{ item.secondaryLabel }}</td>
           <td>{{ item.recitationCount }}</td>
           <td>{{ item.mistakeCount }}</td>
           <td>{{ item.averageGrade }}</td>
-          <td>{{ item.latestRecitationDate || "-" }}</td>
+          <td class="ltr">{{ item.latestRecitationDate || "—" }}</td>
           <td>{{ topMistakesLabel(item.topMistakes) }}</td>
+        </tr>
+        <tr v-if="!overview.students.length">
+          <td colspan="7" class="empty-row">{{ $t("reports.noData") }}</td>
         </tr>
       </tbody>
     </table>
-  </section>
+  </PageLayout>
 
-  <section class="card">
-    <h2>{{ $t("reports.byGroup") }}</h2>
+  <PageLayout :title="$t('reports.byGroup')" icon="pi-sitemap">
     <table class="table">
       <thead>
         <tr>
@@ -99,15 +95,17 @@
           <td>{{ item.recitationCount }}</td>
           <td>{{ item.mistakeCount }}</td>
           <td>{{ item.averageGrade }}</td>
-          <td>{{ item.latestRecitationDate || "-" }}</td>
+          <td class="ltr">{{ item.latestRecitationDate || "—" }}</td>
           <td>{{ topMistakesLabel(item.topMistakes) }}</td>
+        </tr>
+        <tr v-if="!overview.groups.length">
+          <td colspan="7" class="empty-row">{{ $t("reports.noData") }}</td>
         </tr>
       </tbody>
     </table>
-  </section>
+  </PageLayout>
 
-  <section class="card">
-    <h2>{{ $t("reports.byLevel") }}</h2>
+  <PageLayout :title="$t('reports.byLevel')" icon="pi-list">
     <table class="table">
       <thead>
         <tr>
@@ -127,15 +125,17 @@
           <td>{{ item.recitationCount }}</td>
           <td>{{ item.mistakeCount }}</td>
           <td>{{ item.averageGrade }}</td>
-          <td>{{ item.latestRecitationDate || "-" }}</td>
+          <td class="ltr">{{ item.latestRecitationDate || "—" }}</td>
           <td>{{ topMistakesLabel(item.topMistakes) }}</td>
+        </tr>
+        <tr v-if="!overview.levels.length">
+          <td colspan="7" class="empty-row">{{ $t("reports.noData") }}</td>
         </tr>
       </tbody>
     </table>
-  </section>
+  </PageLayout>
 
-  <section class="card">
-    <h2>{{ $t("reports.recentRecitations") }}</h2>
+  <PageLayout :title="$t('reports.recentRecitations')" icon="pi-book">
     <table class="table">
       <thead>
         <tr>
@@ -149,23 +149,38 @@
       </thead>
       <tbody>
         <tr v-for="item in overview.recentRecitations" :key="`recent-${item.id}`">
-          <td>{{ item.recitationDate }}</td>
-          <td>{{ item.student?.name || "-" }}</td>
-          <td>{{ item.group?.name || "-" }}</td>
-          <td>{{ item.level?.name || "-" }}</td>
+          <td class="ltr">{{ item.recitationDate }}</td>
+          <td>
+            <RouterLink v-if="item.student?.id" :to="`/students/${item.student.id}/progress`" class="entity-link">
+              {{ item.student?.name || "—" }}
+            </RouterLink>
+            <span v-else>—</span>
+          </td>
+          <td>{{ item.group?.name || "—" }}</td>
+          <td>{{ item.level?.name || "—" }}</td>
           <td>{{ item.totalMistakes }}</td>
-          <td>{{ item.grade ?? "-" }}</td>
+          <td>{{ item.grade ?? "—" }}</td>
+        </tr>
+        <tr v-if="!overview.recentRecitations.length">
+          <td colspan="6" class="empty-row">{{ $t("reports.noData") }}</td>
         </tr>
       </tbody>
     </table>
-  </section>
+  </PageLayout>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, reactive } from "vue";
+import { useI18n } from "vue-i18n";
+import { useToast } from "primevue/usetoast";
+import { RouterLink } from "vue-router";
+import Button from "primevue/button";
+import PageLayout from "../components/PageLayout.vue";
 import { apiGet } from "../services/api";
 
-const error = ref("");
+const { t } = useI18n();
+const toast = useToast();
+
 const overview = reactive({
   topMistakes: [],
   students: [],
@@ -184,7 +199,6 @@ const summary = reactive({
 
 async function load() {
   try {
-    error.value = "";
     const data = await apiGet("/reports/overview");
     Object.assign(summary, data.summary || {});
     overview.topMistakes = data.topMistakes || [];
@@ -193,16 +207,33 @@ async function load() {
     overview.levels = data.levels || [];
     overview.recentRecitations = data.recentRecitations || [];
   } catch (err) {
-    error.value = err.message;
+    toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
   }
 }
 
 function topMistakesLabel(items) {
-  if (!items || items.length === 0) {
-    return "-";
-  }
-  return items.map((item) => `${item.name} (${item.count})`).join(", ");
+  if (!items?.length) return "—";
+  return items.map(item => `${item.name} (${item.count})`).join("، ");
 }
 
 onMounted(load);
 </script>
+
+<style scoped>
+.empty-row {
+  text-align: center;
+  color: var(--color-ink-muted);
+  padding: var(--space-8);
+  font-size: var(--text-sm);
+}
+
+.entity-link {
+  color: var(--color-primary-600);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.entity-link:hover {
+  text-decoration: underline;
+}
+</style>

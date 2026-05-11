@@ -40,6 +40,7 @@ import ReportsView from "./views/ReportsView.vue";
 import UsersView from "./views/UsersView.vue";
 import LoginView from "./views/LoginView.vue";
 import ProfileView from "./views/ProfileView.vue";
+import StudentProgressView from "./views/StudentProgressView.vue";
 
 const routes = [
   { path: "/login", component: LoginView, meta: { public: true } },
@@ -52,7 +53,8 @@ const routes = [
   { path: "/mistake-types", component: MistakeTypesView },
   { path: "/recitations", component: RecitationDocumentsView },
   { path: "/users", component: UsersView },
-  { path: "/profile", component: ProfileView }
+  { path: "/profile", component: ProfileView },
+  { path: "/students/:id/progress", component: StudentProgressView }
 ];
 
 const router = createRouter({
