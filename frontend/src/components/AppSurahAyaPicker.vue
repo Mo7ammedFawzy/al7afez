@@ -1,8 +1,11 @@
 <template>
   <div class="app-field">
-    <label v-if="label">{{ label }}<span v-if="required" class="req">*</span></label>
+    <label v-if="label" :for="`${uid}-surah`">
+      {{ label }}<span v-if="required" class="req" aria-hidden="true">*</span>
+    </label>
     <div class="surah-aya-row">
       <Select
+        :inputId="`${uid}-surah`"
         :modelValue="surah || null"
         :options="surahOptions"
         optionLabel="label"
@@ -19,19 +22,22 @@
         min="1"
         :max="maxAya ?? undefined"
         :placeholder="$t('common.aya')"
+        :aria-label="$t('common.aya')"
         :disabled="!surah"
         :value="aya || ''"
         @input="onAyaInput"
       />
-      <span v-if="maxAya" class="aya-max">/ {{ maxAya }}</span>
+      <span v-if="maxAya" class="aya-max" aria-hidden="true">/ {{ maxAya }}</span>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, getCurrentInstance } from 'vue';
 import Select from 'primevue/select';
 import { SURAHS, ayaCountForSurah } from '../data/surahs.js';
+
+const uid = `app-field-${getCurrentInstance().uid}`;
 
 const surahOptions = SURAHS.map(s => ({ ...s, label: `${s.number} - ${s.name}` }));
 

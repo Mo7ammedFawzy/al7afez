@@ -1,4 +1,5 @@
 <template>
+  <a href="#main-content" class="skip-link">{{ $t('common.skipToContent') }}</a>
   <Toast position="top-left" />
   <ConfirmDialog />
 
@@ -13,7 +14,7 @@
       </div>
 
       <!-- Nav -->
-      <nav class="nav" role="navigation">
+      <nav class="nav" :aria-label="$t('nav.sidebarLabel')">
         <template v-for="group in navGroups" :key="group.label ?? 'top'">
           <p v-if="group.label" class="nav-group-label">{{ $t(group.label) }}</p>
           <RouterLink
@@ -49,7 +50,7 @@
       </div>
     </aside>
 
-    <main class="content">
+    <main id="main-content" class="content">
       <RouterView />
     </main>
   </div>
@@ -105,6 +106,27 @@ function logout() {
 </script>
 
 <style scoped>
+/* ── Skip link ───────────────────────────────────────────────────────────── */
+.skip-link {
+  position: absolute;
+  inset-block-start: var(--space-4);
+  inset-inline-start: var(--space-4);
+  transform: translateY(-200%);
+  background: var(--color-primary-600);
+  color: #ffffff;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  text-decoration: none;
+  z-index: 9999;
+  transition: transform var(--transition-fast);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
 /* ── Nav group labels ────────────────────────────────────────────────────── */
 .nav-group-label {
   margin: var(--space-3) 0 0;

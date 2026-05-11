@@ -1,18 +1,28 @@
 <template>
   <div class="app-field">
-    <label v-if="label">{{ label }}<span v-if="required" class="req">*</span></label>
-    <select :required="required" v-model="internalValue">
+    <label v-if="label" :for="uid">
+      {{ label }}<span v-if="required" class="req" aria-hidden="true">*</span>
+    </label>
+    <select
+      :id="uid"
+      :required="required"
+      :aria-invalid="error ? true : undefined"
+      :aria-describedby="error ? `${uid}-err` : undefined"
+      v-model="internalValue"
+    >
       <option value="">{{ placeholder || $t('common.select') }}</option>
       <option v-for="node in treeFlat" :key="node.id" :value="node.id">
-        {{ '   '.repeat(node.depth) }}{{ node.depth > 0 ? '— ' : '' }}{{ node.name }}
+        {{ '   '.repeat(node.depth) }}{{ node.depth > 0 ? '— ' : '' }}{{ node.name }}
       </option>
     </select>
-    <span v-if="error" class="field-error">{{ error }}</span>
+    <span v-if="error" :id="`${uid}-err`" class="field-error" role="alert">{{ error }}</span>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, getCurrentInstance } from 'vue';
+
+const uid = `app-field-${getCurrentInstance().uid}`;
 
 const props = defineProps({
   label:       { type: String,  default: undefined },

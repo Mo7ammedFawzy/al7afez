@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="table-scroll">
+    <div class="table-scroll" :aria-busy="loading || undefined">
     <table class="table">
       <thead>
         <tr>

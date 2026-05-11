@@ -4,7 +4,7 @@
       <Button :label="$t('common.list')" icon="pi pi-list" severity="secondary" @click="handleList" />
     </template>
 
-    <form class="grid grid-2" @submit.prevent="handleSubmit" novalidate>
+    <form ref="formEl" class="grid grid-2" @submit.prevent="handleSubmit" novalidate>
       <AppInput v-model="form.name" :label="$t('levels.name')" required :error="errors.name" />
       <AppInput v-model="form.code" :label="$t('levels.code')"          />
       <AppSurahAyaPicker
@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, nextTick, onMounted, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useConfirm } from "primevue/useconfirm";
 import Button from "primevue/button";
@@ -56,7 +56,11 @@ const emit = defineEmits(["submit", "cancel", "list"]);
 
 const errors = reactive({});
 const initialForm = ref('');
-onMounted(() => { initialForm.value = JSON.stringify(props.form); });
+const formEl = ref(null);
+onMounted(() => {
+  initialForm.value = JSON.stringify(props.form);
+  nextTick(() => formEl.value?.querySelector('input:not([disabled]), select:not([disabled])')?.focus());
+});
 const isDirty = computed(() => JSON.stringify(props.form) !== initialForm.value);
 
 function confirmDiscard(action) {

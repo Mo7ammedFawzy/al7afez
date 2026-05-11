@@ -10,6 +10,7 @@
     "tagline": "Track recitations, log mistakes, and analyze performance across students, groups, and levels."
   },
   "nav": {
+    "sidebarLabel": "Main navigation",
     "reports": "Reports",
     "students": "Students",
     "sheikhs": "Sheikhs",
@@ -54,6 +55,7 @@
     "deleteConfirm": "Are you sure you want to delete this item?",
     "deleteTitle": "Confirm Delete",
     "loading": "Loading...",
+    "skipToContent": "Skip to main content",
     "unsavedChanges": "You have unsaved changes. Continue without saving?",
     "discardTitle": "Discard Changes",
     "discard": "Discard"
