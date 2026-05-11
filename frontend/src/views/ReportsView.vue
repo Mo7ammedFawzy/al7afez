@@ -7,7 +7,7 @@
     <p class="small-muted">{{ $t("reports.subtitle") }}</p>
   </PageLayout>
 
-  <div class="stat-cards">
+  <div class="summary-grid">
     <article class="card stat-card">
       <span class="small-muted">{{ $t("reports.cards.students") }}</span>
       <strong v-if="!loading">{{ summary.totalStudents }}</strong>

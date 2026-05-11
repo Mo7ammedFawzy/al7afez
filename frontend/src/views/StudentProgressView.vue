@@ -15,7 +15,7 @@
     <Skeleton v-else-if="loading" height="1rem" width="14rem" class="meta-skel" />
   </PageLayout>
 
-  <div class="stat-cards">
+  <div class="summary-grid">
     <article class="card stat-card">
       <span class="small-muted">{{ $t("reports.recitations") }}</span>
       <strong v-if="!loading">{{ recitations.length }}</strong>
