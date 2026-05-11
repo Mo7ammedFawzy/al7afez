@@ -8,7 +8,7 @@
         :label="$t('common.list')"
         icon="pi pi-list"
         severity="secondary"
-        @click="emit('list')"
+        @click="handleList"
       />
     </template>
 
@@ -42,7 +42,7 @@
           icon="pi pi-times"
           severity="secondary"
           :disabled="submitting"
-          @click="emit('cancel')"
+          @click="handleCancel"
         />
       </div>
     </form>
@@ -50,8 +50,9 @@
 </template>
 
 <script setup>
-import { reactive } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { useConfirm } from "primevue/useconfirm";
 import Button from "primevue/button";
 import PageLayout from "./PageLayout.vue";
 import AppInput from "./AppInput.vue";
@@ -59,6 +60,7 @@ import AppSelect from "./AppSelect.vue";
 import AppDatePicker from "./AppDatePicker.vue";
 
 const { t } = useI18n();
+const confirmDialog = useConfirm();
 
 const props = defineProps({
   form:       { type: Object,  required: true },
@@ -69,6 +71,26 @@ const props = defineProps({
 const emit = defineEmits(["submit", "cancel", "list"]);
 
 const errors = reactive({});
+const initialForm = ref('');
+onMounted(() => { initialForm.value = JSON.stringify(props.form); });
+const isDirty = computed(() => JSON.stringify(props.form) !== initialForm.value);
+
+function confirmDiscard(action) {
+  if (!isDirty.value) { action(); return; }
+  confirmDialog.require({
+    message: t('common.unsavedChanges'),
+    header: t('common.discardTitle'),
+    icon: 'pi pi-exclamation-triangle',
+    acceptProps: { severity: 'danger' },
+    rejectProps: { severity: 'secondary', outlined: true },
+    acceptLabel: t('common.discard'),
+    rejectLabel: t('common.cancel'),
+    accept: action,
+  });
+}
+
+function handleCancel() { confirmDiscard(() => emit('cancel')); }
+function handleList()   { confirmDiscard(() => emit('list'));   }
 
 function validate() {
   errors.name = props.form.name?.trim() ? undefined : t("validation.required");

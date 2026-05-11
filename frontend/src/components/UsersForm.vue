@@ -1,7 +1,7 @@
 <template>
   <PageLayout :title="form.id ? $t('users.edit') : $t('users.new')" icon="pi-user">
     <template #actions>
-      <Button :label="$t('common.list')" icon="pi pi-list" severity="secondary" @click="emit('list')" />
+      <Button :label="$t('common.list')" icon="pi pi-list" severity="secondary" @click="handleList" />
     </template>
 
     <form class="grid grid-2" @submit.prevent="handleSubmit" novalidate>
@@ -22,7 +22,7 @@
       />
       <div class="button-row">
         <Button type="submit" :label="form.id ? $t('common.save') : $t('common.create')" icon="pi pi-check" :loading="submitting" :disabled="submitting" />
-        <Button type="button" :label="$t('common.cancel')" icon="pi pi-times" severity="secondary" :disabled="submitting" @click="emit('cancel')" />
+        <Button type="button" :label="$t('common.cancel')" icon="pi pi-times" severity="secondary" :disabled="submitting" @click="handleCancel" />
       </div>
     </form>
 
@@ -39,14 +39,16 @@
 </template>
 
 <script setup>
-import { reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { useConfirm } from "primevue/useconfirm";
 import Button from "primevue/button";
 import PageLayout from "./PageLayout.vue";
 import AppInput from "./AppInput.vue";
 import AppSelect from "./AppSelect.vue";
 
 const { t } = useI18n();
+const confirmDialog = useConfirm();
 
 const props = defineProps({
   form:       { type: Object,  required: true },
@@ -58,6 +60,26 @@ const emit = defineEmits(["submit", "cancel", "list", "changePassword"]);
 
 const newPassword = ref("");
 const errors = reactive({});
+const initialForm = ref('');
+onMounted(() => { initialForm.value = JSON.stringify(props.form); });
+const isDirty = computed(() => JSON.stringify(props.form) !== initialForm.value);
+
+function confirmDiscard(action) {
+  if (!isDirty.value) { action(); return; }
+  confirmDialog.require({
+    message: t('common.unsavedChanges'),
+    header: t('common.discardTitle'),
+    icon: 'pi pi-exclamation-triangle',
+    acceptProps: { severity: 'danger' },
+    rejectProps: { severity: 'secondary', outlined: true },
+    acceptLabel: t('common.discard'),
+    rejectLabel: t('common.cancel'),
+    accept: action,
+  });
+}
+
+function handleCancel() { confirmDiscard(() => emit('cancel')); }
+function handleList()   { confirmDiscard(() => emit('list'));   }
 
 function validate() {
   errors.name     = props.form.name?.trim()     ? undefined : t("validation.required");

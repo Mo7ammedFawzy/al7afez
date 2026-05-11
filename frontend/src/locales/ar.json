@@ -52,7 +52,10 @@
     "deleted": "تم الحذف بنجاح",
     "deleteConfirm": "هل تريد حذف هذا العنصر؟",
     "deleteTitle": "تأكيد الحذف",
-    "loading": "جاري التحميل..."
+    "loading": "جاري التحميل...",
+    "unsavedChanges": "لديك تغييرات غير محفوظة، هل تريد المتابعة بدون حفظ؟",
+    "discardTitle": "تجاهل التغييرات",
+    "discard": "تجاهل"
   },
   "validation": {
     "required": "هذا الحقل مطلوب",
