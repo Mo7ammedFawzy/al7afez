@@ -1,20 +1,12 @@
 <template>
-  <div v-if="error" class="popup-overlay" @click.self="error.value = ''">
-    <div class="popup-card">
-      <p>{{ error }}</p>
-      <button class="secondary" type="button" @click="error.value = ''">{{ $t("common.cancel") }}</button>
-    </div>
-  </div>
-
   <StudentsForm
     v-if="showForm"
     :form="form"
     :groups="groups"
     @submit="submit"
-    @cancel="cancelEdit"
+    @cancel="showListView"
     @list="showListView"
   />
-
   <StudentsList
     v-else
     :items="items"
@@ -29,13 +21,17 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { useToast } from "primevue/usetoast";
 import { apiDelete, apiGet, apiPost, apiPut } from "../services/api";
 import StudentsForm from "../components/StudentsForm.vue";
 import StudentsList from "../components/StudentsList.vue";
 
+const { t } = useI18n();
+const toast = useToast();
+
 const items = ref([]);
 const groups = ref([]);
-const error = ref("");
 const form = ref(emptyForm());
 const page = ref(0);
 const totalPages = ref(1);
@@ -57,7 +53,6 @@ function emptyForm() {
 
 async function load() {
   try {
-    error.value = "";
     const [studentsData, groupsData] = await Promise.all([
       apiGet("/students", { page: page.value, size: pageSize }),
       apiGet("/groups", { page: 0, size: 100 })
@@ -66,7 +61,7 @@ async function load() {
     totalPages.value = studentsData.totalPages ?? 1;
     groups.value = groupsData.content ?? groupsData;
   } catch (err) {
-    error.value = err.message;
+    toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
   }
 }
 
@@ -89,11 +84,6 @@ function edit(student) {
   showForm.value = true;
 }
 
-function cancelEdit() {
-  form.value = emptyForm();
-  showForm.value = false;
-}
-
 function showListView() {
   form.value = emptyForm();
   showForm.value = false;
@@ -113,7 +103,6 @@ function buildPayload() {
 
 async function submit() {
   try {
-    error.value = "";
     const payload = buildPayload();
     if (form.value.id) {
       await apiPut(`/students/${form.value.id}`, payload);
@@ -121,19 +110,18 @@ async function submit() {
       await apiPost("/students", payload);
       page.value = 0;
     }
-    form.value = emptyForm();
-    showForm.value = true;
+    showForm.value = false;
+    await load();
+    toast.add({ severity: "success", summary: t("common.saved"), life: 2000 });
   } catch (err) {
-    error.value = err.message;
+    toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
   }
 }
 
 async function remove(student) {
-  if (!student?.id) {
-    return;
-  }
+  if (!student?.id) return;
+  if (!confirm(t("common.deleteConfirm"))) return;
   try {
-    error.value = "";
     await apiDelete(`/students/${student.id}`);
     await load();
     if (items.value.length === 0 && page.value > 0) {
@@ -141,7 +129,7 @@ async function remove(student) {
       await load();
     }
   } catch (err) {
-    error.value = err.message;
+    toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
   }
 }
 

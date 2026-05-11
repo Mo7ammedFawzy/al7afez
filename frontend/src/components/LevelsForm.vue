@@ -1,63 +1,47 @@
 <template>
-  <section class="card">
-    <div class="section-header">
-      <div>
-        <h2>{{ form.id ? $t("levels.edit") : $t("levels.new") }}</h2>
-      </div>
-      <button class="primary icon" type="button" @click="handleCancel" :title="$t('common.list')" :aria-label="$t('common.list')">☰</button>
-    </div>
-    <form class="grid grid-2" @submit.prevent="handleSubmit">
-      <div>
-        <label>{{ $t("levels.name") }}</label>
-        <input v-model="form.name" required />
-      </div>
-      <div>
-        <label>{{ $t("levels.code") }}</label>
-        <input v-model="form.code" required />
-      </div>
-      <div>
-        <label>{{ $t("levels.fromSurah") }}</label>
-        <input v-model.number="form.fromSurah" type="number" min="1" />
-      </div>
-      <div>
-        <label>{{ $t("levels.toSurah") }}</label>
-        <input v-model.number="form.toSurah" type="number" min="1" />
-      </div>
-      <div>
-        <label>{{ $t("levels.fromAya") }}</label>
-        <input v-model.number="form.fromAya" type="number" min="1" />
-      </div>
-      <div>
-        <label>{{ $t("levels.toAya") }}</label>
-        <input v-model.number="form.toAya" type="number" min="1" />
-      </div>
-      <div>
-        <label>{{ $t("levels.ayatPerSession") }}</label>
-        <input v-model.number="form.numberOfAyatPerSession" type="number" min="1" />
+  <PageLayout :title="form.id ? $t('levels.edit') : $t('levels.new')" icon="pi-list">
+    <template #actions>
+      <Button :label="$t('common.list')" icon="pi pi-list" severity="secondary" @click="emit('list')" />
+    </template>
+
+    <form class="grid grid-2" @submit.prevent="emit('submit')">
+      <AppInput v-model="form.name" :label="$t('levels.name')" required />
+      <AppInput v-model="form.code" :label="$t('levels.code')"          />
+      <AppSurahAyaPicker
+        :label="$t('levels.fromSurah')"
+        :surah="form.fromSurah"
+        :aya="form.fromAya"
+        @update:surah="form.fromSurah = $event"
+        @update:aya="form.fromAya = $event"
+      />
+      <AppSurahAyaPicker
+        :label="$t('levels.toSurah')"
+        :surah="form.toSurah"
+        :aya="form.toAya"
+        @update:surah="form.toSurah = $event"
+        @update:aya="form.toAya = $event"
+      />
+      <div class="app-field">
+        <label>{{ $t('levels.ayatPerSession') }}</label>
+        <input type="number" min="1" v-model.number="form.numberOfAyatPerSession" />
       </div>
       <div class="button-row">
-        <button class="primary" type="submit">{{ form.id ? $t("common.save") : $t("common.create") }}</button>
-        <button class="secondary" type="button" @click="handleCancel">{{ $t("common.cancel") }}</button>
+        <Button type="submit" :label="form.id ? $t('common.save') : $t('common.create')" icon="pi pi-check" />
+        <Button type="button" :label="$t('common.cancel')" icon="pi pi-times" severity="secondary" @click="emit('cancel')" />
       </div>
     </form>
-  </section>
+  </PageLayout>
 </template>
 
 <script setup>
+import Button from 'primevue/button';
+import PageLayout from './PageLayout.vue';
+import AppInput from './AppInput.vue';
+import AppSurahAyaPicker from './AppSurahAyaPicker.vue';
+
 defineProps({
-  form: {
-    type: Object,
-    required: true
-  }
+  form: { type: Object, required: true },
 });
 
-const emit = defineEmits(["submit", "cancel"]);
-
-function handleSubmit() {
-  emit("submit");
-}
-
-function handleCancel() {
-  emit("cancel");
-}
+const emit = defineEmits(['submit', 'cancel', 'list']);
 </script>

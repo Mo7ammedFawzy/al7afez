@@ -1,62 +1,36 @@
 <template>
-  <section class="card">
-    <div class="section-header">
-      <div>
-        <h2>{{ form.id ? $t("sheikhs.edit") : $t("sheikhs.new") }}</h2>
-      </div>
-      <button class="primary icon" type="button" @click="handleList" :title="$t('common.list')" :aria-label="$t('common.list')">☰</button>
-    </div>
-    <form class="grid grid-2" @submit.prevent="handleSubmit">
-      <div>
-        <label>{{ $t("sheikhs.name") }}</label>
-        <input v-model="form.name" required />
-      </div>
-      <div>
-        <label>{{ $t("sheikhs.code") }}</label>
-        <input v-model="form.code" required />
-      </div>
-      <div>
-        <label>{{ $t("sheikhs.birthDate") }}</label>
-        <input v-model="form.birthDate" type="date" />
-      </div>
-      <div>
-        <label>{{ $t("sheikhs.gender") }}</label>
-        <select v-model="form.gender">
-          <option value="MALE">{{ $t("common.male") }}</option>
-          <option value="FEMALE">{{ $t("common.female") }}</option>
-        </select>
-      </div>
-      <div>
-        <label>{{ $t("sheikhs.phone") }}</label>
-        <input v-model="form.phoneNumber" />
-      </div>
+  <PageLayout :title="form.id ? $t('sheikhs.edit') : $t('sheikhs.new')" icon="pi-graduation-cap">
+    <template #actions>
+      <Button :label="$t('common.list')" icon="pi pi-list" severity="secondary" @click="emit('list')" />
+    </template>
+
+    <form class="grid grid-2" @submit.prevent="emit('submit')">
+      <AppInput v-model="form.name"        :label="$t('sheikhs.name')"      required />
+      <AppInput v-model="form.code"        :label="$t('sheikhs.code')"               />
+      <AppDatePicker v-model="form.birthDate" :label="$t('sheikhs.birthDate')"       />
+      <AppSelect v-model="form.gender"     :label="$t('sheikhs.gender')">
+        <option value="MALE">{{ $t("common.male") }}</option>
+        <option value="FEMALE">{{ $t("common.female") }}</option>
+      </AppSelect>
+      <AppInput v-model="form.phoneNumber" :label="$t('sheikhs.phone')"              />
       <div class="button-row">
-        <button class="primary" type="submit">{{ form.id ? $t("common.save") : $t("common.create") }}</button>
-        <button class="secondary" type="button" @click="handleCancel">{{ $t("common.cancel") }}</button>
+        <Button type="submit" :label="form.id ? $t('common.save') : $t('common.create')" icon="pi pi-check" />
+        <Button type="button" :label="$t('common.cancel')" icon="pi pi-times" severity="secondary" @click="emit('cancel')" />
       </div>
     </form>
-  </section>
+  </PageLayout>
 </template>
 
 <script setup>
+import Button from 'primevue/button';
+import PageLayout from './PageLayout.vue';
+import AppInput from './AppInput.vue';
+import AppSelect from './AppSelect.vue';
+import AppDatePicker from './AppDatePicker.vue';
+
 defineProps({
-  form: {
-    type: Object,
-    required: true
-  }
+  form: { type: Object, required: true },
 });
 
-const emit = defineEmits(["submit", "cancel", "list"]);
-
-function handleSubmit() {
-  emit("submit");
-}
-
-function handleCancel() {
-  emit("cancel");
-}
-
-function handleList() {
-  emit("list");
-}
+const emit = defineEmits(['submit', 'cancel', 'list']);
 </script>

@@ -1,25 +1,17 @@
 <template>
-  <div v-if="error" class="popup-overlay" @click.self="error.value = ''">
-    <div class="popup-card">
-      <p>{{ error }}</p>
-      <button class="secondary" type="button" @click="error.value = ''">{{ $t("common.cancel") }}</button>
-    </div>
-  </div>
-
-  <GroupsForm 
+  <GroupsForm
     v-if="showForm"
     :form="form"
     :levels="levels"
     :sheikhs="sheikhs"
     @submit="submit"
-    @cancel="cancelEdit"
+    @cancel="showListView"
     @list="showListView"
   />
-
-  <GroupsList 
+  <GroupsList
     v-else
-    :items="items" 
-    :totalPages="totalPages" 
+    :items="items"
+    :totalPages="totalPages"
     :page="page"
     @new="newGroup"
     @edit="edit"
@@ -30,14 +22,18 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { useToast } from "primevue/usetoast";
 import { apiDelete, apiGet, apiPost, apiPut } from "../services/api";
 import GroupsList from "../components/GroupsList.vue";
 import GroupsForm from "../components/GroupsForm.vue";
 
+const { t } = useI18n();
+const toast = useToast();
+
 const items = ref([]);
 const levels = ref([]);
 const sheikhs = ref([]);
-const error = ref("");
 const form = ref(emptyForm());
 const page = ref(0);
 const totalPages = ref(1);
@@ -45,18 +41,11 @@ const showForm = ref(false);
 const pageSize = 10;
 
 function emptyForm() {
-  return {
-    id: null,
-    name: "",
-    code: "",
-    levelId: "",
-    sheikhId: ""
-  };
+  return { id: null, name: "", code: "", levelId: "", sheikhId: "" };
 }
 
 async function load() {
   try {
-    error.value = "";
     const [groupsData, levelsData, sheikhsData] = await Promise.all([
       apiGet("/groups", { page: page.value, size: pageSize }),
       apiGet("/levels", { page: 0, size: 100 }),
@@ -67,7 +56,7 @@ async function load() {
     levels.value = levelsData.content ?? levelsData;
     sheikhs.value = sheikhsData.content ?? sheikhsData;
   } catch (err) {
-    error.value = err.message;
+    toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
   }
 }
 
@@ -87,31 +76,9 @@ function edit(group) {
   showForm.value = true;
 }
 
-function cancelEdit() {
-  form.value = emptyForm();
-  showForm.value = false;
-}
-
 function showListView() {
   form.value = emptyForm();
   showForm.value = false;
-}
-
-async function submit() {
-  try {
-    error.value = "";
-    const payload = buildPayload();
-    if (form.value.id) {
-      await apiPut(`/groups/${form.value.id}`, payload);
-    } else {
-      await apiPost("/groups", payload);
-      page.value = 0;
-    }
-    form.value = emptyForm();
-    showForm.value = true;
-  } catch (err) {
-    error.value = err.message;
-  }
 }
 
 function buildPayload() {
@@ -123,12 +90,27 @@ function buildPayload() {
   };
 }
 
-async function remove(group) {
-  if (!group?.id) {
-    return;
-  }
+async function submit() {
   try {
-    error.value = "";
+    const payload = buildPayload();
+    if (form.value.id) {
+      await apiPut(`/groups/${form.value.id}`, payload);
+    } else {
+      await apiPost("/groups", payload);
+      page.value = 0;
+    }
+    showForm.value = false;
+    await load();
+    toast.add({ severity: "success", summary: t("common.saved"), life: 2000 });
+  } catch (err) {
+    toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
+  }
+}
+
+async function remove(group) {
+  if (!group?.id) return;
+  if (!confirm(t("common.deleteConfirm"))) return;
+  try {
     await apiDelete(`/groups/${group.id}`);
     await load();
     if (items.value.length === 0 && page.value > 0) {
@@ -136,7 +118,7 @@ async function remove(group) {
       await load();
     }
   } catch (err) {
-    error.value = err.message;
+    toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
   }
 }
 

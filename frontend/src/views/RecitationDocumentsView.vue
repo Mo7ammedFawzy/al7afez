@@ -1,21 +1,13 @@
 <template>
-  <div v-if="error" class="popup-overlay" @click.self="error.value = ''">
-    <div class="popup-card">
-      <p>{{ error }}</p>
-      <button class="secondary" type="button" @click="error.value = ''">{{ $t("common.cancel") }}</button>
-    </div>
-  </div>
-
   <RecitationDocumentsForm
     v-if="showForm"
     :form="form"
     :students="students"
     :mistakeTypes="mistakeTypes"
     @submit="submit"
-    @cancel="cancelEdit"
+    @cancel="showListView"
     @list="showListView"
   />
-
   <RecitationDocumentsList
     v-else
     :items="items"
@@ -30,14 +22,18 @@
 
 <script setup>
 import { onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
+import { useToast } from "primevue/usetoast";
 import { apiDelete, apiGet, apiPost, apiPut } from "../services/api";
 import RecitationDocumentsForm from "../components/RecitationDocumentsForm.vue";
 import RecitationDocumentsList from "../components/RecitationDocumentsList.vue";
 
+const { t } = useI18n();
+const toast = useToast();
+
 const items = ref([]);
 const students = ref([]);
 const mistakeTypes = ref([]);
-const error = ref("");
 const form = ref(emptyForm());
 const page = ref(0);
 const totalPages = ref(1);
@@ -46,24 +42,14 @@ const pageSize = 10;
 
 function emptyForm() {
   return {
-    id: null,
-    code: "",
-    recitationDate: "",
-    studentId: "",
-    fromSurah: null,
-    toSurah: null,
-    fromAya: null,
-    toAya: null,
-    numberOfAyat: null,
-    grade: null,
-    notes: "",
-    mistakes: []
+    id: null, code: "", recitationDate: "", studentId: "",
+    fromSurah: null, toSurah: null, fromAya: null, toAya: null,
+    numberOfAyat: null, grade: null, notes: "", mistakes: []
   };
 }
 
 async function load() {
   try {
-    error.value = "";
     const [recitationsData, studentsData, mistakeTypesData] = await Promise.all([
       apiGet("/recitations", { page: page.value, size: pageSize }),
       apiGet("/students", { page: 0, size: 100 }),
@@ -74,7 +60,7 @@ async function load() {
     students.value = studentsData.content ?? studentsData;
     mistakeTypes.value = mistakeTypesData.content ?? mistakeTypesData;
   } catch (err) {
-    error.value = err.message;
+    toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
   }
 }
 
@@ -96,17 +82,12 @@ function edit(recitation) {
     numberOfAyat: recitation.numberOfAyat ?? null,
     grade: recitation.grade ?? null,
     notes: recitation.notes || "",
-    mistakes: (recitation.mistakes || []).map((mistake) => ({
-      mistakeTypeId: mistake.mistakeType?.id || "",
-      count: mistake.count ?? 1
+    mistakes: (recitation.mistakes || []).map(m => ({
+      mistakeTypeId: m.mistakeType?.id || "",
+      count: m.count ?? 1
     }))
   };
   showForm.value = true;
-}
-
-function cancelEdit() {
-  form.value = emptyForm();
-  showForm.value = false;
 }
 
 function showListView() {
@@ -127,17 +108,13 @@ function buildPayload() {
     grade: form.value.grade ?? null,
     notes: form.value.notes || null,
     mistakes: form.value.mistakes
-      .filter((mistake) => mistake.mistakeTypeId && mistake.count)
-      .map((mistake) => ({
-        mistakeTypeId: Number(mistake.mistakeTypeId),
-        count: Number(mistake.count)
-      }))
+      .filter(m => m.mistakeTypeId && m.count)
+      .map(m => ({ mistakeTypeId: Number(m.mistakeTypeId), count: Number(m.count) }))
   };
 }
 
 async function submit() {
   try {
-    error.value = "";
     const payload = buildPayload();
     if (form.value.id) {
       await apiPut(`/recitations/${form.value.id}`, payload);
@@ -145,19 +122,18 @@ async function submit() {
       await apiPost("/recitations", payload);
       page.value = 0;
     }
-    form.value = emptyForm();
-    showForm.value = true;
+    showForm.value = false;
+    await load();
+    toast.add({ severity: "success", summary: t("common.saved"), life: 2000 });
   } catch (err) {
-    error.value = err.message;
+    toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
   }
 }
 
 async function remove(recitation) {
-  if (!recitation?.id) {
-    return;
-  }
+  if (!recitation?.id) return;
+  if (!confirm(t("common.deleteConfirm"))) return;
   try {
-    error.value = "";
     await apiDelete(`/recitations/${recitation.id}`);
     await load();
     if (items.value.length === 0 && page.value > 0) {
@@ -165,7 +141,7 @@ async function remove(recitation) {
       await load();
     }
   } catch (err) {
-    error.value = err.message;
+    toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
   }
 }
 

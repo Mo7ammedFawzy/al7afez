@@ -1,20 +1,12 @@
 <template>
-  <div v-if="error" class="popup-overlay" @click.self="error.value = ''">
-    <div class="popup-card">
-      <p>{{ error }}</p>
-      <button class="secondary" type="button" @click="error.value = ''">{{ $t("common.cancel") }}</button>
-    </div>
-  </div>
-
   <MistakeTypesForm
     v-if="showForm"
     :form="form"
     :parentOptions="parentOptions"
     @submit="submit"
-    @cancel="cancelEdit"
+    @cancel="showListView"
     @list="showListView"
   />
-
   <MistakeTypesList
     v-else
     :items="items"
@@ -30,34 +22,30 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import { useToast } from "primevue/usetoast";
 import { apiDelete, apiGet, apiPost, apiPut } from "../services/api";
 import MistakeTypesForm from "../components/MistakeTypesForm.vue";
 import MistakeTypesList from "../components/MistakeTypesList.vue";
 
 const { t } = useI18n();
+const toast = useToast();
+
 const items = ref([]);
 const allTypes = ref([]);
-const error = ref("");
 const form = ref(emptyForm());
 const page = ref(0);
 const totalPages = ref(1);
 const showForm = ref(false);
 const pageSize = 10;
 
-const parentOptions = computed(() => allTypes.value.filter((item) => item.id !== form.value.id));
+const parentOptions = computed(() => allTypes.value.filter(item => item.id !== form.value.id));
 
 function emptyForm() {
-  return {
-    id: null,
-    name: "",
-    code: "",
-    parentId: ""
-  };
+  return { id: null, name: "", code: "", parentId: "" };
 }
 
 async function load() {
   try {
-    error.value = "";
     const [pagedData, allData] = await Promise.all([
       apiGet("/mistake-types", { page: page.value, size: pageSize }),
       apiGet("/mistake-types", { page: 0, size: 200 })
@@ -66,7 +54,7 @@ async function load() {
     totalPages.value = pagedData.totalPages ?? 1;
     allTypes.value = allData.content ?? allData;
   } catch (err) {
-    error.value = err.message;
+    toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
   }
 }
 
@@ -85,11 +73,6 @@ function edit(type) {
   showForm.value = true;
 }
 
-function cancelEdit() {
-  form.value = emptyForm();
-  showForm.value = false;
-}
-
 function showListView() {
   form.value = emptyForm();
   showForm.value = false;
@@ -105,7 +88,6 @@ function buildPayload() {
 
 async function submit() {
   try {
-    error.value = "";
     const payload = buildPayload();
     if (form.value.id) {
       await apiPut(`/mistake-types/${form.value.id}`, payload);
@@ -113,34 +95,27 @@ async function submit() {
       await apiPost("/mistake-types", payload);
       page.value = 0;
     }
-    form.value = emptyForm();
-    showForm.value = true;
+    showForm.value = false;
+    await load();
+    toast.add({ severity: "success", summary: t("common.saved"), life: 2000 });
   } catch (err) {
-    error.value = err.message;
+    toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
   }
 }
 
 async function remove(type) {
-  if (!type?.id) {
-    return;
-  }
-  const confirmed = confirm(t("mistakeTypes.deleteConfirm", { name: type.name }));
-  if (!confirmed) {
-    return;
-  }
+  if (!type?.id) return;
+  if (!confirm(t("mistakeTypes.deleteConfirm", { name: type.name }))) return;
   try {
-    error.value = "";
     await apiDelete(`/mistake-types/${type.id}`);
-    if (form.value.id === type.id) {
-      showListView();
-    }
+    if (form.value.id === type.id) showListView();
     await load();
     if (items.value.length === 0 && page.value > 0) {
       page.value -= 1;
       await load();
     }
   } catch (err) {
-    error.value = err.message;
+    toast.add({ severity: "error", summary: t("common.error"), detail: err.message, life: 5000 });
   }
 }
 
