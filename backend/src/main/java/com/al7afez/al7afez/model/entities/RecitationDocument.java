@@ -103,6 +103,8 @@ public class RecitationDocument extends DocumentFile {
     }
 
     public List<RecitationMistakeLine> getMistakes() {
+        if (mistakes == null)
+            mistakes = new ArrayList<>();
         return mistakes;
     }
 

@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -191,7 +192,9 @@ public class MappingService {
         recitation.setNumberOfAyat(request.numberOfAyat());
         recitation.setGrade(request.grade());
         recitation.setNotes(normalize(request.notes()));
-        recitation.setMistakes(buildMistakeLines(recitation, request.mistakes()));
+        if (recitation.getMistakes() != null)
+            recitation.getMistakes().clear();
+        recitation.getMistakes().addAll(buildMistakeLines(recitation, request.mistakes()));
     }
 
     // ── Private helpers ────────────────────────────────────────────────────────
@@ -209,7 +212,7 @@ public class MappingService {
             line.setCount(req.count());
             lines.add(line);
         }
-        return lines.stream().filter(Objects::nonNull).toList();
+        return lines.stream().filter(Objects::nonNull).collect(Collectors.toList());
     }
 
     private Level resolveLevel(Long id) {
