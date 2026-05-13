@@ -4,6 +4,7 @@ import '../l10n/tr.dart';
 import '../models/recitation_form_data.dart';
 import '../models/student.dart';
 import '../services/api_service.dart';
+import '../widgets/surah_aya_field.dart';
 import 'login_screen.dart';
 import 'recitation_mistakes_screen.dart';
 
@@ -20,15 +21,15 @@ class _RecitationFormScreenState extends State<RecitationFormScreen> {
 
   final _codeCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
-  final _fromSurahCtrl = TextEditingController();
-  final _toSurahCtrl = TextEditingController();
-  final _fromAyaCtrl = TextEditingController();
-  final _toAyaCtrl = TextEditingController();
   final _numberOfAyatCtrl = TextEditingController();
   final _gradeCtrl = TextEditingController();
 
   DateTime? _recitationDate;
   int? _selectedStudentId;
+  int? _fromSurah;
+  int? _fromAya;
+  int? _toSurah;
+  int? _toAya;
 
   List<Student> _students = [];
   bool _loadingData = true;
@@ -87,10 +88,10 @@ class _RecitationFormScreenState extends State<RecitationFormScreen> {
       code: _codeCtrl.text.isEmpty ? null : _codeCtrl.text,
       recitationDate: _recitationDate,
       studentId: _selectedStudentId,
-      fromSurah: int.tryParse(_fromSurahCtrl.text),
-      toSurah: int.tryParse(_toSurahCtrl.text),
-      fromAya: int.tryParse(_fromAyaCtrl.text),
-      toAya: int.tryParse(_toAyaCtrl.text),
+      fromSurah: _fromSurah,
+      toSurah: _toSurah,
+      fromAya: _fromAya,
+      toAya: _toAya,
       numberOfAyat: int.tryParse(_numberOfAyatCtrl.text),
       grade: int.tryParse(_gradeCtrl.text),
       notes: _notesCtrl.text.isEmpty ? null : _notesCtrl.text,
@@ -121,15 +122,15 @@ class _RecitationFormScreenState extends State<RecitationFormScreen> {
     _formKey.currentState?.reset();
     _codeCtrl.clear();
     _notesCtrl.clear();
-    _fromSurahCtrl.clear();
-    _toSurahCtrl.clear();
-    _fromAyaCtrl.clear();
-    _toAyaCtrl.clear();
     _numberOfAyatCtrl.clear();
     _gradeCtrl.clear();
     setState(() {
       _recitationDate = null;
       _selectedStudentId = null;
+      _fromSurah = null;
+      _fromAya = null;
+      _toSurah = null;
+      _toAya = null;
       _error = '';
     });
   }
@@ -138,10 +139,6 @@ class _RecitationFormScreenState extends State<RecitationFormScreen> {
   void dispose() {
     _codeCtrl.dispose();
     _notesCtrl.dispose();
-    _fromSurahCtrl.dispose();
-    _toSurahCtrl.dispose();
-    _fromAyaCtrl.dispose();
-    _toAyaCtrl.dispose();
     _numberOfAyatCtrl.dispose();
     _gradeCtrl.dispose();
     super.dispose();
@@ -193,16 +190,24 @@ class _RecitationFormScreenState extends State<RecitationFormScreen> {
                     ]),
                     const SizedBox(height: 12),
 
-                    _row([
-                      _field(label: Tr.translate('fromSurah'), controller: _fromSurahCtrl, numeric: true),
-                      _field(label: Tr.translate('toSurah'), controller: _toSurahCtrl, numeric: true),
-                    ]),
+                    SurahAyaField(
+                      surahLabel: Tr.translate('fromSurah'),
+                      ayaLabel: Tr.translate('fromAya'),
+                      surahValue: _fromSurah,
+                      ayaValue: _fromAya,
+                      onSurahChanged: (v) => setState(() => _fromSurah = v),
+                      onAyaChanged: (v) => setState(() => _fromAya = v),
+                    ),
                     const SizedBox(height: 12),
 
-                    _row([
-                      _field(label: Tr.translate('fromAya'), controller: _fromAyaCtrl, numeric: true),
-                      _field(label: Tr.translate('toAya'), controller: _toAyaCtrl, numeric: true),
-                    ]),
+                    SurahAyaField(
+                      surahLabel: Tr.translate('toSurah'),
+                      ayaLabel: Tr.translate('toAya'),
+                      surahValue: _toSurah,
+                      ayaValue: _toAya,
+                      onSurahChanged: (v) => setState(() => _toSurah = v),
+                      onAyaChanged: (v) => setState(() => _toAya = v),
+                    ),
                     const SizedBox(height: 12),
 
                     _field(

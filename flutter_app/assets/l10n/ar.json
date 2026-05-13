@@ -14,10 +14,7 @@
   "code": "الكود",
   "required": "مطلوب",
   "numberOfAyat": "عدد الآيات",
-  "fromSurah": "من سورة",
-  "toSurah": "إلى سورة",
-  "fromAya": "من آية",
-  "toAya": "إلى آية",
+
   "grade": "التقدير (0-10)",
   "gradeMustBeBetween": "يجب أن يكون بين 0 و 10",
   "sessionNotes": "ملاحظات الجلسة",
@@ -56,5 +53,19 @@
   "recentRecitations": "آخر التلاوات",
   "sheikh": "الشيخ",
   "noData": "لا توجد بيانات",
-  "retry": "إعادة المحاولة"
+  "retry": "إعادة المحاولة",
+  "noRecentRecitations": "لا توجد تلاوات حديثة",
+  "discardTitle": "تجاهل التغييرات",
+  "unsavedChanges": "لديك تغييرات غير محفوظة، هل تريد المتابعة بدون حفظ؟",
+  "discard": "تجاهل",
+
+  "recordLoaded": "تم تحميل بيانات التلاوة للتعديل",
+
+  "chooseSurah": "اختر السورة",
+  "search": "بحث...",
+  "aya": "آية",
+  "fromSurahName": "من سورة",
+  "toSurahName": "إلى سورة",
+  "fromAyaNum": "من آية",
+  "toAyaNum": "إلى آية"
 }

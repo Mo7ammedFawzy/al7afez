@@ -105,19 +105,30 @@ class _DashboardTabState extends State<DashboardTab> {
                       const SizedBox(height: 24),
 
                       // Recent recitations
-                      if (_recent.isNotEmpty) ...[
-                        Text(
-                          Tr.translate('recentRecitations'),
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                        ),
-                        const SizedBox(height: 8),
+                      Text(
+                        Tr.translate('recentRecitations'),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      const SizedBox(height: 8),
+                      if (_recent.isNotEmpty)
                         ..._recent.map((r) => RecentRecitationTile(
                               recitation: r as Map<String, dynamic>,
                               primaryColor: colorScheme.primary,
-                            )),
-                      ],
+                            ))
+                      else
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 24),
+                          child: Center(
+                            child: Text(
+                              Tr.translate('noRecentRecitations'),
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),

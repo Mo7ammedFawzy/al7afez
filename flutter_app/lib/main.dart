@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'l10n/tr.dart';
 import 'services/api_service.dart';
 import 'screens/login_screen.dart';
@@ -22,9 +23,9 @@ class Al7afezApp extends StatelessWidget {
       title: Tr.translate('appTitle'),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1E6F50)),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2F65D5)),
         useMaterial3: true,
-        fontFamily: 'Roboto',
+        textTheme: GoogleFonts.cairoTextTheme(),
       ),
       locale: const Locale('ar'),
       supportedLocales: const [Locale('ar'), Locale('en')],
