@@ -2,6 +2,7 @@ package com.al7afez.al7afez.controllers;
 
 import com.al7afez.al7afez.dto.RecitationRequest;
 import com.al7afez.al7afez.dto.RecitationResponse;
+import com.al7afez.al7afez.dto.RecitationSuggestionResponse;
 import com.al7afez.al7afez.service.RecitationService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +37,11 @@ public class RecitationDocumentController {
             return service.getByStudentId(studentId, pageable);
         }
         return service.getAll(pageable);
+    }
+
+    @GetMapping("/suggest")
+    public ResponseEntity<RecitationSuggestionResponse> suggest(@RequestParam Long studentId) {
+        return ResponseEntity.ok(service.suggestNext(studentId));
     }
 
     @GetMapping("/{id}")

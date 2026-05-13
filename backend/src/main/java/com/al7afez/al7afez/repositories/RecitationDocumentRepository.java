@@ -67,4 +67,7 @@ public interface RecitationDocumentRepository extends BaseRepository<RecitationD
             "mistakes.mistakeType"
     })
     Page<RecitationDocument> findByStudentIdDetailed(@Param("studentId") Long studentId, Pageable pageable);
+
+    @Query("select r from RecitationDocument r where r.student.id = :studentId order by r.recitationDate desc, r.id desc")
+    List<RecitationDocument> findLatestByStudentId(@Param("studentId") Long studentId, Pageable pageable);
 }

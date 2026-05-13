@@ -2,8 +2,11 @@ package com.al7afez.al7afez.service;
 
 import com.al7afez.al7afez.dto.RecitationRequest;
 import com.al7afez.al7afez.dto.RecitationResponse;
+import com.al7afez.al7afez.dto.RecitationSuggestionResponse;
+import com.al7afez.al7afez.model.entities.Level;
 import com.al7afez.al7afez.model.entities.RecitationDocument;
 import com.al7afez.al7afez.repositories.RecitationDocumentRepository;
+import com.al7afez.al7afez.repositories.StudentRepository;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,13 +19,16 @@ import org.springframework.web.server.ResponseStatusException;
 @Transactional
 public class RecitationService extends AbsDocumentFileService<RecitationDocument> {
     private final RecitationDocumentRepository recitationRepository;
+    private final StudentRepository studentRepository;
     private final MappingService mappingService;
 
     public RecitationService(
             RecitationDocumentRepository recitationRepository,
+            StudentRepository studentRepository,
             MappingService mappingService
     ) {
         this.recitationRepository = recitationRepository;
+        this.studentRepository = studentRepository;
         this.mappingService = mappingService;
     }
 
@@ -67,5 +73,33 @@ public class RecitationService extends AbsDocumentFileService<RecitationDocument
     public Page<RecitationResponse> getByStudentId(Long studentId, Pageable pageable) {
         return recitationRepository.findByStudentIdDetailed(studentId, pageable)
                 .map(mappingService::toRecitationResponse);
+    }
+
+    public RecitationSuggestionResponse suggestNext(Long studentId) {
+        var student = studentRepository.findByIdWithGroup(studentId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
+
+        Level level = student.getRecitationGroup() != null
+                ? student.getRecitationGroup().getLevel()
+                : null;
+
+        int sessionSize = level != null ? level.getNumberOfAyatPerSession() : 0;
+
+        List<RecitationDocument> latest = recitationRepository.findLatestByStudentId(studentId, Pageable.ofSize(1));
+
+        if (!latest.isEmpty()) {
+            RecitationDocument last = latest.getFirst();
+            int fromSurah = last.getToSurah();
+            int fromAya   = last.getToAya() + 1;
+            return new RecitationSuggestionResponse(fromSurah, fromAya, fromSurah, fromAya + sessionSize - 1, sessionSize);
+        }
+
+        if (level != null) {
+            int fromSurah = level.getFromSurah();
+            int fromAya   = level.getFromAya();
+            return new RecitationSuggestionResponse(fromSurah, fromAya, fromSurah, fromAya + sessionSize - 1, sessionSize);
+        }
+
+        return new RecitationSuggestionResponse(null, null, null, null, null);
     }
 }

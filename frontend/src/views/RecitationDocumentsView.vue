@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
@@ -75,6 +75,20 @@ async function load() {
     loading.value = false;
   }
 }
+
+watch(() => form.value.studentId, async (studentId) => {
+  if (!showForm.value || form.value.id || !studentId) return;
+  try {
+    const suggestion = await apiGet("/recitations/suggest", { studentId });
+    form.value.fromSurah = suggestion.fromSurah;
+    form.value.fromAya = suggestion.fromAya;
+    form.value.toSurah = suggestion.toSurah;
+    form.value.toAya = suggestion.toAya;
+    form.value.numberOfAyat = suggestion.numberOfAyat;
+  } catch {
+    // suggestion is best-effort; ignore errors
+  }
+});
 
 function newRecitation() {
   form.value = emptyForm();
