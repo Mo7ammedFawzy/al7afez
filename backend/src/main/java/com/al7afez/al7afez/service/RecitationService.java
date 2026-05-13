@@ -88,16 +88,11 @@ public class RecitationService extends AbsDocumentFileService<RecitationDocument
         List<RecitationDocument> latest = recitationRepository.findLatestByStudentId(studentId, Pageable.ofSize(1));
 
         if (!latest.isEmpty()) {
-            RecitationDocument last = latest.getFirst();
-            int fromSurah = last.getToSurah();
-            int fromAya   = last.getToAya() + 1;
-            return new RecitationSuggestionResponse(fromSurah, fromAya, fromSurah, fromAya + sessionSize - 1, sessionSize);
+            return QuranUtils.suggestNextRecitationData(latest.getFirst(), sessionSize);
         }
 
         if (level != null) {
-            int fromSurah = level.getFromSurah();
-            int fromAya   = level.getFromAya();
-            return new RecitationSuggestionResponse(fromSurah, fromAya, fromSurah, fromAya + sessionSize - 1, sessionSize);
+            return QuranUtils.suggestNextRecitationData(level);
         }
 
         return new RecitationSuggestionResponse(null, null, null, null, null);

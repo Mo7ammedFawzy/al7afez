@@ -13,8 +13,8 @@ public abstract class BaseService<E extends BaseEntity> {
      */
     protected void isValidForCommit(E entity) {
         if (entity == null) return;
-        if (ObjectChecker.isEmptyOrNull(entity.getCode()))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Code is required");
+//        if (ObjectChecker.isEmptyOrNull(entity.getCode()))
+//            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Code is required");
     }
 
     /**
