@@ -51,7 +51,7 @@ function emptyForm() {
     id: null,
     name: "",
     code: "",
-    birthDate: "",
+    birthDate: new Date().toISOString().split('T')[0],
     phoneNumber: "",
     parentPhoneNumber: "",
     gender: "MALE",

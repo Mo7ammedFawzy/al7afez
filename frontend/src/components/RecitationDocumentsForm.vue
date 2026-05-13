@@ -5,7 +5,7 @@
     </template>
 
     <form ref="formEl" class="grid grid-2" @submit.prevent="handleSubmit" novalidate>
-      <AppInput v-model="form.code"            :label="$t('recitations.code')"          required :error="errors.code" />
+      <AppInput v-model="form.code"            :label="$t('recitations.code')"                               />
       <AppDatePicker v-model="form.recitationDate" :label="$t('recitations.recitationDate')"    />
       <AppSelect v-model="form.studentId"      :label="$t('recitations.student')"       required :error="errors.studentId">
         <option value="">{{ $t("common.select") }} {{ $t("recitations.student") }}</option>
@@ -121,7 +121,6 @@ function handleCancel() { confirmDiscard(() => emit('cancel')); }
 function handleList()   { confirmDiscard(() => emit('list'));   }
 
 function validate() {
-  errors.code      = props.form.code?.trim() ? undefined : t("validation.required");
   errors.studentId = props.form.studentId    ? undefined : t("validation.required");
   errors.grade     = (props.form.grade != null && (props.form.grade < 0 || props.form.grade > 10))
     ? t("validation.between", { min: 0, max: 10 })

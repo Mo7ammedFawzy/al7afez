@@ -5,7 +5,7 @@
     </template>
 
     <form ref="formEl" class="grid grid-2" @submit.prevent="handleSubmit" novalidate>
-      <AppInput v-model="form.code" :label="$t('mistakeTypes.code')" required />
+      <AppInput v-model="form.code" :label="$t('mistakeTypes.code')"          />
       <AppInput v-model="form.name" :label="$t('mistakeTypes.name')" required :error="errors.name" />
       <AppMistakeTypeSelect
         class="field-span-2"

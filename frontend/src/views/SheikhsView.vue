@@ -45,7 +45,7 @@ const totalItems = ref(0);
 const pageSize = 10;
 
 function emptyForm() {
-  return { id: null, name: "", code: "", birthDate: "", phoneNumber: "", gender: "MALE" };
+  return { id: null, name: "", code: "", birthDate: new Date().toISOString().split('T')[0], phoneNumber: "", gender: "MALE" };
 }
 
 async function load() {

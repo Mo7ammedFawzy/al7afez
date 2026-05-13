@@ -14,7 +14,7 @@
 
     <form ref="formEl" class="grid grid-2" @submit.prevent="handleSubmit" novalidate>
       <AppInput v-model="form.name"              :label="$t('students.name')"        required :error="errors.name" />
-      <AppInput v-model="form.code"              :label="$t('students.code')"        required />
+      <AppInput v-model="form.code"              :label="$t('students.code')"                 />
       <AppDatePicker v-model="form.birthDate"    :label="$t('students.birthDate')"            />
       <AppSelect v-model="form.gender"           :label="$t('students.gender')">
         <option value="MALE">{{ $t("common.male") }}</option>

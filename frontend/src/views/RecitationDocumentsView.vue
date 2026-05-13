@@ -50,7 +50,7 @@ const pageSize = 10;
 
 function emptyForm() {
   return {
-    id: null, code: "", recitationDate: "", studentId: "",
+    id: null, code: "", recitationDate: new Date().toISOString().split('T')[0], studentId: "",
     fromSurah: null, toSurah: null, fromAya: null, toAya: null,
     numberOfAyat: null, grade: null, notes: "", mistakes: []
   };
