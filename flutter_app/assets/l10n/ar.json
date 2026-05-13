@@ -67,5 +67,9 @@
   "fromSurahName": "من سورة",
   "toSurahName": "إلى سورة",
   "fromAyaNum": "من آية",
-  "toAyaNum": "إلى آية"
+  "toAyaNum": "إلى آية",
+  "fromSurah": "من سورة",
+  "toSurah": "إلى سورة",
+  "fromAya": "من آية",
+  "toAya": "إلى آية"
 }

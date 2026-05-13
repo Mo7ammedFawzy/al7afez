@@ -24,7 +24,7 @@ class _RecitationFormScreenState extends State<RecitationFormScreen> {
   final _numberOfAyatCtrl = TextEditingController();
   final _gradeCtrl = TextEditingController();
 
-  DateTime? _recitationDate;
+  DateTime? _recitationDate = DateTime.now();
   int? _selectedStudentId;
   int? _fromSurah;
   int? _fromAya;
@@ -125,7 +125,7 @@ class _RecitationFormScreenState extends State<RecitationFormScreen> {
     _numberOfAyatCtrl.clear();
     _gradeCtrl.clear();
     setState(() {
-      _recitationDate = null;
+      _recitationDate = DateTime.now();
       _selectedStudentId = null;
       _fromSurah = null;
       _fromAya = null;
@@ -133,6 +133,23 @@ class _RecitationFormScreenState extends State<RecitationFormScreen> {
       _toAya = null;
       _error = '';
     });
+  }
+
+  Future<void> _fetchSuggestion(int studentId) async {
+    try {
+      final data = await ApiService.get('/recitations/suggest', params: {'studentId': '$studentId'});
+      if (!mounted) return;
+      setState(() {
+        _fromSurah = data['fromSurah'] as int?;
+        _fromAya   = data['fromAya']   as int?;
+        _toSurah   = data['toSurah']   as int?;
+        _toAya     = data['toAya']     as int?;
+        final ayat = data['numberOfAyat'];
+        _numberOfAyatCtrl.text = ayat != null ? '$ayat' : '';
+      });
+    } catch (_) {
+      // suggestion is best-effort; ignore errors
+    }
   }
 
   @override
@@ -178,7 +195,6 @@ class _RecitationFormScreenState extends State<RecitationFormScreen> {
                       _field(
                         label: Tr.translate('code'),
                         controller: _codeCtrl,
-                        validator: (v) => (v == null || v.isEmpty) ? Tr.translate('required') : null,
                       ),
                       _datePicker(),
                     ]),
@@ -191,8 +207,8 @@ class _RecitationFormScreenState extends State<RecitationFormScreen> {
                     const SizedBox(height: 12),
 
                     SurahAyaField(
-                      surahLabel: Tr.translate('fromSurah'),
-                      ayaLabel: Tr.translate('fromAya'),
+                      surahLabel: Tr.translate('fromSurahName'),
+                      ayaLabel: Tr.translate('fromAyaNum'),
                       surahValue: _fromSurah,
                       ayaValue: _fromAya,
                       onSurahChanged: (v) => setState(() => _fromSurah = v),
@@ -201,8 +217,8 @@ class _RecitationFormScreenState extends State<RecitationFormScreen> {
                     const SizedBox(height: 12),
 
                     SurahAyaField(
-                      surahLabel: Tr.translate('toSurah'),
-                      ayaLabel: Tr.translate('toAya'),
+                      surahLabel: Tr.translate('toSurahName'),
+                      ayaLabel: Tr.translate('toAyaNum'),
                       surahValue: _toSurah,
                       ayaValue: _toAya,
                       onSurahChanged: (v) => setState(() => _toSurah = v),
@@ -316,7 +332,10 @@ class _RecitationFormScreenState extends State<RecitationFormScreen> {
         DropdownMenuItem<int>(value: null, child: Text(Tr.translate('chooseStudent'))),
         ..._students.map((s) => DropdownMenuItem<int>(value: s.id, child: Text(s.name))),
       ],
-      onChanged: (v) => setState(() => _selectedStudentId = v),
+      onChanged: (v) {
+        setState(() => _selectedStudentId = v);
+        if (widget.editId == null && v != null) _fetchSuggestion(v);
+      },
     );
   }
 }
