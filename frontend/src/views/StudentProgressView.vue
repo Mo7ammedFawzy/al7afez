@@ -153,10 +153,11 @@ function rangeLabel(r) {
 
 function topMistakesLabel(mistakes) {
   if (!mistakes?.length) return "—";
-  return mistakes.slice(0, 3)
-    .map(m => `${m.mistakeType?.name || ""} (${m.count})`)
+  const names = mistakes
+    .map(m => m.mistakeType?.name)
     .filter(Boolean)
-    .join("، ");
+    .slice(0, 3);
+  return names.join("، ") || "—";
 }
 
 onMounted(load);

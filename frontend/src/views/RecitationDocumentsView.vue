@@ -109,8 +109,7 @@ function edit(recitation) {
     grade: recitation.grade ?? null,
     notes: recitation.notes || "",
     mistakes: (recitation.mistakes || []).map(m => ({
-      mistakeTypeId: m.mistakeType?.id || "",
-      count: m.count ?? 1
+      mistakeTypeId: m.mistakeType?.id || ""
     }))
   };
   showForm.value = true;

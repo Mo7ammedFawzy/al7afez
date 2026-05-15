@@ -63,10 +63,10 @@ const columns = computed(() => [
 
 function joinNames(selected) {
   if (!selected?.length) return '';
-  return selected
-    .map(item => `${item.mistakeType?.name || ''} (${item.count})`)
-    .filter(Boolean)
-    .join('، ');
+  const names = selected
+    .map(item => item.mistakeType?.name)
+    .filter(Boolean);
+  return names.join('، ');
 }
 
 function rangeLabel(recitation) {

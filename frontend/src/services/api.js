@@ -10,11 +10,23 @@ function buildQuery(params = {}) {
   return `?${search.toString()}`;
 }
 
+async function extractErrorMessage(response) {
+  const text = await response.text();
+  if (!text) return `Request failed: ${response.status}`;
+  try {
+    const json = JSON.parse(text);
+    return json.message || json.error || text;
+  } catch {
+    return text;
+  }
+}
+
 async function request(path, options = {}) {
   const token = localStorage.getItem("token");
   const response = await fetch(`${API_BASE}${path}`, {
     headers: {
       "Content-Type": "application/json",
+      "Accept-Language": "ar",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options.headers || {})
     },
@@ -34,8 +46,7 @@ async function request(path, options = {}) {
   }
 
   if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || `Request failed: ${response.status}`);
+    throw new Error(await extractErrorMessage(response));
   }
 
   return response.json();

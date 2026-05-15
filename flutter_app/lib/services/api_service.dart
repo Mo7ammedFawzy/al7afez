@@ -58,6 +58,7 @@ class ApiService {
 
   static Map<String, String> get _headers => {
         'Content-Type': 'application/json',
+        'Accept-Language': 'ar',
         if (_token != null) 'Authorization': 'Bearer $_token',
       };
 
@@ -88,10 +89,22 @@ class ApiService {
   static dynamic _handle(http.Response res) {
     if (res.statusCode == 204) return null;
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      final msg = res.body.isNotEmpty ? res.body : '';
-      throw ApiException(msg, statusCode: res.statusCode);
+      throw ApiException(_extractMessage(res), statusCode: res.statusCode);
     }
     if (res.body.isEmpty) return null;
     return jsonDecode(utf8.decode(res.bodyBytes));
+  }
+
+  static String _extractMessage(http.Response res) {
+    if (res.body.isEmpty) return '';
+    try {
+      final json = jsonDecode(utf8.decode(res.bodyBytes));
+      if (json is Map<String, dynamic>) {
+        return json['message'] as String? ??
+               json['error'] as String? ??
+               res.body;
+      }
+    } catch (_) {}
+    return res.body;
   }
 }
