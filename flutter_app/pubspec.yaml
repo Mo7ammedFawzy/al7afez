@@ -24,3 +24,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/l10n/
+  fonts:
+    - family: AmiriQuranColored
+      fonts:
+        - asset: assets/fonts/AmiriQuranColored.ttf

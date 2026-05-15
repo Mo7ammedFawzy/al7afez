@@ -27,6 +27,7 @@
   "student": "الطالب",
   "chooseStudent": "اختر الطالب",
 
+  "mistakes": "أخطاء",
   "mistakesLog": "سجل الأخطاء",
   "mistakesHint": "أضف كل نوع خطأ مع عدد مرات تكراره.",
   "addMistake": "إضافة خطأ",
@@ -71,5 +72,8 @@
   "fromSurah": "من سورة",
   "toSurah": "إلى سورة",
   "fromAya": "من آية",
-  "toAya": "إلى آية"
+  "toAya": "إلى آية",
+
+  "noAyahs": "لا توجد آيات",
+  "tapWordHint": "اضغط على الكلمة لتسجيل الخطأ • اضغط مجدداً لإلغائه"
 }

@@ -56,8 +56,8 @@ class ActiveChip extends StatelessWidget {
                     color: Colors.white.withValues(alpha: 0.25),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(
-                    '${mistake.count}',
+                  child: Text(""
+                    /*'${mistake.count}'*/,
                     style: const TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,

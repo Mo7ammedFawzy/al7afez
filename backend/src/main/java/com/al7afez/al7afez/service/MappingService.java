@@ -1,6 +1,7 @@
 package com.al7afez.al7afez.service;
 
 import com.al7afez.al7afez.dto.*;
+import com.al7afez.al7afez.infra.Messages;
 import com.al7afez.al7afez.model.details.RecitationMistakeLine;
 import com.al7afez.al7afez.model.entities.*;
 import com.al7afez.al7afez.repositories.GroupRepository;
@@ -12,8 +13,6 @@ import com.al7afez.al7afez.repositories.StudentRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -81,7 +80,9 @@ public class MappingService {
         return new RecitationMistakeResponse(
                 mistake.getId(),
                 toEntityReferenceData(mistake.getMistakeType()),
-                mistake.getCount()
+                mistake.getSurahNumber(),
+                mistake.getAyaNumber(),
+                mistake.getWordIndex()
         );
     }
 
@@ -91,14 +92,9 @@ public class MappingService {
         Level level = group != null ? group.getLevel() : null;
         Sheikh sheikh = group != null ? group.getSheikh() : null;
         List<RecitationMistakeResponse> mistakes = recitation.getMistakes().stream()
-                .filter(Objects::nonNull)
                 .map(this::toRecitationMistakeResponse)
                 .toList();
-        int totalMistakes = recitation.getMistakes().stream()
-                .map(RecitationMistakeLine::getCount)
-                .filter(Objects::nonNull)
-                .mapToInt(Integer::intValue)
-                .sum();
+        int totalMistakes = recitation.getMistakes().size();
 
         return new RecitationResponse(
                 recitation.getId(),
@@ -181,7 +177,7 @@ public class MappingService {
 
     public void toRecitation(RecitationDocument recitation, RecitationRequest request) {
         Student student = studentRepository.findByIdWithGroup(request.studentId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Selected student was not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, Messages.get("error.student.selected.notFound")));
         recitation.setCode(normalize(request.code()));
         recitation.setStudent(student);
         recitation.setRecitationDate(request.recitationDate() != null ? request.recitationDate() : LocalDate.now());
@@ -203,40 +199,40 @@ public class MappingService {
         if (requests == null) return new ArrayList<>();
         List<RecitationMistakeLine> lines = new ArrayList<>();
         for (RecitationMistakeRequest req : requests) {
-            if (req == null || req.mistakeTypeId() == null || req.count() == null) continue;
-            if (req.count() <= 0)
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Mistake counts must be greater than zero");
+            if (req == null) continue;
             RecitationMistakeLine line = new RecitationMistakeLine();
             line.setRecitationDocument(recitation);
             line.setMistakeType(resolveMistakeType(req.mistakeTypeId()));
-            line.setCount(req.count());
+            line.setSurahNumber(req.surahNumber());
+            line.setAyaNumber(req.ayaNumber());
+            line.setWordIndex(req.wordIndex());
             lines.add(line);
         }
-        return lines.stream().filter(Objects::nonNull).collect(Collectors.toList());
+        return lines;
     }
 
     private Level resolveLevel(Long id) {
         if (id == null) return null;
         return levelRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Selected level was not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, Messages.get("error.level.selected.notFound")));
     }
 
     private Sheikh resolveSheikh(Long id) {
         if (id == null) return null;
         return sheikhRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Selected sheikh was not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, Messages.get("error.sheikh.selected.notFound")));
     }
 
     private RecitationGroup resolveGroup(Long id) {
         if (id == null) return null;
         return groupRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Selected group was not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, Messages.get("error.group.selected.notFound")));
     }
 
     private MistakeType resolveMistakeType(Long id) {
         if (id == null) return null;
         return mistakeTypeRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Selected mistake type was not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, Messages.get("error.mistakeType.selected.notFound")));
     }
 
     private String normalize(String value) {

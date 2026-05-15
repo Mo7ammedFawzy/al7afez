@@ -64,10 +64,7 @@ public class ReportsService {
 
         long totalMistakes = recitations.stream()
                 .flatMap(recitation -> recitation.getMistakes().stream())
-                .map(RecitationMistakeLine::getCount)
-                .filter(Objects::nonNull)
-                .mapToLong(Integer::longValue)
-                .sum();
+                .filter(Objects::nonNull).count();
 
         double averageGrade = recitations.stream()
                 .map(RecitationDocument::getGrade)
@@ -99,14 +96,14 @@ public class ReportsService {
 
         for (RecitationDocument recitation : recitations) {
             for (RecitationMistakeLine mistake : recitation.getMistakes()) {
-                if (mistake.getMistakeType() == null || mistake.getCount() == null) {
+                if (mistake.getMistakeType() == null) {
                     continue;
                 }
-                total += mistake.getCount();
+                total += 1;
                 aggregates.computeIfAbsent(
                         mistake.getMistakeType().getId(),
                         ignored -> new MistakeAggregate(mistake.getMistakeType().getId(), mistake.getMistakeType().getName())
-                ).count += mistake.getCount();
+                ).count += 1;
             }
         }
 
@@ -162,10 +159,7 @@ public class ReportsService {
 
     private ReportDimensionResponse summarizeDimension(Long id, String name, String secondaryLabel, List<RecitationDocument> recitations) {
         long mistakeCount = recitations.stream()
-                .flatMap(recitation -> recitation.getMistakes().stream())
-                .map(RecitationMistakeLine::getCount)
-                .filter(Objects::nonNull)
-                .mapToLong(Integer::longValue)
+                .mapToLong(recitation -> recitation.getMistakes().size())
                 .sum();
         double averageGrade = recitations.stream()
                 .map(RecitationDocument::getGrade)

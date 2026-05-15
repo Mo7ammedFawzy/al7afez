@@ -16,7 +16,9 @@ public class RecitationMistakeLine extends BaseLine {
     @JoinColumn(name = "mistake_type_id")
     private MistakeType mistakeType;
 
-    private Integer count;
+    private Integer surahNumber;
+    private Integer ayaNumber;
+    private Integer wordIndex;
 
     public RecitationDocument getRecitationDocument() {
         return recitationDocument;
@@ -34,13 +36,27 @@ public class RecitationMistakeLine extends BaseLine {
         this.mistakeType = mistakeType;
     }
 
-    public Integer getCount() {
-        return count;
+    public Integer getSurahNumber() {
+        return surahNumber;
     }
 
-    public void setCount(Integer count) {
-        this.count = count;
+    public void setSurahNumber(Integer surahNumber) {
+        this.surahNumber = surahNumber;
     }
 
+    public Integer getAyaNumber() {
+        return ayaNumber;
+    }
 
+    public void setAyaNumber(Integer ayaNumber) {
+        this.ayaNumber = ayaNumber;
+    }
+
+    public Integer getWordIndex() {
+        return wordIndex;
+    }
+
+    public void setWordIndex(Integer wordIndex) {
+        this.wordIndex = wordIndex;
+    }
 }
