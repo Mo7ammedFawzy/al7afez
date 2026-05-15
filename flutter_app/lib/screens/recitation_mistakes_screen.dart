@@ -19,11 +19,15 @@ class _MarkedWord {
 class RecitationMistakesScreen extends StatefulWidget {
   final RecitationFormData formData;
   final int? editId;
+  final List<Map<String, dynamic>> initialMistakes;
+  final int? initialGrade;
 
   const RecitationMistakesScreen({
     super.key,
     required this.formData,
     this.editId,
+    this.initialMistakes = const [],
+    this.initialGrade,
   });
 
   @override
