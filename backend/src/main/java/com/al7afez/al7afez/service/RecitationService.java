@@ -1,6 +1,7 @@
 package com.al7afez.al7afez.service;
 
 import com.al7afez.al7afez.dto.RecitationRequest;
+import com.al7afez.al7afez.infra.Messages;
 import com.al7afez.al7afez.dto.RecitationResponse;
 import com.al7afez.al7afez.dto.RecitationSuggestionResponse;
 import com.al7afez.al7afez.model.entities.Level;
@@ -38,7 +39,7 @@ public class RecitationService extends AbsDocumentFileService<RecitationDocument
 
     public RecitationResponse getById(Long id) {
         RecitationDocument recitation = recitationRepository.findByIdDetailed(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recitation not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.get("error.recitation.notFound")));
         return mappingService.toRecitationResponse(recitation);
     }
 
@@ -51,7 +52,7 @@ public class RecitationService extends AbsDocumentFileService<RecitationDocument
 
     public RecitationResponse update(Long id, RecitationRequest request) {
         RecitationDocument recitation = recitationRepository.findByIdDetailed(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recitation not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.get("error.recitation.notFound")));
         mappingService.toRecitation(recitation, request);
         RecitationDocument saved = save(recitation, recitationRepository);
         return mappingService.toRecitationResponse(saved);
@@ -59,7 +60,7 @@ public class RecitationService extends AbsDocumentFileService<RecitationDocument
 
     public void delete(Long id) {
         RecitationDocument recitation = recitationRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Recitation not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.get("error.recitation.notFound")));
         isValidForDelete(recitation);
         recitationRepository.delete(recitation);
     }
@@ -77,7 +78,7 @@ public class RecitationService extends AbsDocumentFileService<RecitationDocument
 
     public RecitationSuggestionResponse suggestNext(Long studentId) {
         var student = studentRepository.findByIdWithGroup(studentId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.get("error.student.notFound")));
 
         Level level = student.getRecitationGroup() != null
                 ? student.getRecitationGroup().getLevel()

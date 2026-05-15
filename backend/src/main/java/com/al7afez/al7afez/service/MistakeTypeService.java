@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import com.al7afez.al7afez.infra.Messages;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -24,7 +25,7 @@ public class MistakeTypeService extends AbsMasterFileService<MistakeType> {
     @Override
     protected void isValidForDelete(MistakeType entity) {
         if (repository.existsByParentId(entity.getId())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Delete or reassign child mistake types first");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Messages.get("error.mistakeType.hasChildren"));
         }
     }
 
@@ -34,7 +35,7 @@ public class MistakeTypeService extends AbsMasterFileService<MistakeType> {
 
     public MistakeTypeResponse getById(Long id) {
         MistakeType mistakeType = repository.findByIdWithParent(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Mistake type not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.get("error.mistakeType.notFound")));
         return toResponse(mistakeType);
     }
 
@@ -47,7 +48,7 @@ public class MistakeTypeService extends AbsMasterFileService<MistakeType> {
 
     public MistakeTypeResponse update(Long id, MistakeTypeRequest request) {
         MistakeType mistakeType = repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Mistake type not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.get("error.mistakeType.notFound")));
         mappingService.toMistakeType(mistakeType, request);
         MistakeType saved = save(mistakeType, repository);
         return toResponse(saved);
@@ -55,7 +56,7 @@ public class MistakeTypeService extends AbsMasterFileService<MistakeType> {
 
     public void delete(Long id) {
         MistakeType mistakeType = repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Mistake type not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.get("error.mistakeType.notFound")));
         isValidForDelete(mistakeType);
         repository.delete(mistakeType);
     }

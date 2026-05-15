@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import com.al7afez.al7afez.infra.Messages;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -42,7 +43,7 @@ public class StudentService extends AbsMasterFileService<Student> {
 
     public StudentResponse getById(Long id) {
         Student student = studentRepository.findByIdWithGroup(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.get("error.student.notFound")));
         return mappingService.toStudentResponse(student);
     }
 
@@ -55,7 +56,7 @@ public class StudentService extends AbsMasterFileService<Student> {
 
     public StudentResponse update(Long id, StudentRequest request) {
         Student student = studentRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.get("error.student.notFound")));
         mappingService.toStudent(student, request);
         Student saved = save(student, studentRepository);
         return mappingService.toStudentResponse(saved);
@@ -63,7 +64,7 @@ public class StudentService extends AbsMasterFileService<Student> {
 
     public void delete(Long id) {
         Student student = studentRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Student not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.get("error.student.notFound")));
         isValidForDelete(student);
         studentRepository.delete(student);
     }

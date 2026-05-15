@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.al7afez.al7afez.infra.Messages;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -35,7 +36,7 @@ public class UserService extends AbsMasterFileService<AppUser> {
 
     public UserResponse create(UserRequest request) {
         if (repository.existsByUsername(request.username()))
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already taken");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, Messages.get("error.username.taken"));
         AppUser user = new AppUser();
         mappingService.toUser(user, request);
         user.setPassword(encoder.encode(request.password()));
@@ -45,7 +46,7 @@ public class UserService extends AbsMasterFileService<AppUser> {
     public UserResponse update(Long id, UserRequest request) {
         AppUser user = findOrThrow(id);
         if (repository.existsByUsernameAndIdNot(request.username(), id))
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already taken");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, Messages.get("error.username.taken"));
         mappingService.toUser(user, request);
         return mappingService.toUserResponse(save(user, repository));
     }
@@ -54,9 +55,9 @@ public class UserService extends AbsMasterFileService<AppUser> {
     protected void isValidForCommit(AppUser entity) {
         super.isValidForCommit(entity);
         if (ObjectChecker.isEmptyOrNull(entity.getUsername()))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username is required");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Messages.get("error.username.required"));
         if (ObjectChecker.isEmptyOrNull(entity.getPassword()))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password is required");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Messages.get("error.password.required"));
     }
 
     public void changePassword(Long id, ChangePasswordRequest request) {
@@ -73,6 +74,6 @@ public class UserService extends AbsMasterFileService<AppUser> {
 
     private AppUser findOrThrow(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.get("error.user.notFound")));
     }
 }

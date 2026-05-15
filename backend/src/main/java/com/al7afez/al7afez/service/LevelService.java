@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import com.al7afez.al7afez.infra.Messages;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -25,7 +26,7 @@ public class LevelService extends AbsMasterFileService<Level> {
 
     public Level getById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Level not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.get("error.level.notFound")));
     }
 
     public Level create(LevelRequest request) {
@@ -36,14 +37,14 @@ public class LevelService extends AbsMasterFileService<Level> {
 
     public Level update(Long id, LevelRequest request) {
         Level level = repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Level not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.get("error.level.notFound")));
         mappingService.toLevel(level, request);
         return save(level, repository);
     }
 
     public void delete(Long id) {
         Level level = repository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Level not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.get("error.level.notFound")));
         isValidForDelete(level);
         repository.delete(level);
     }

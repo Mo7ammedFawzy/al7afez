@@ -1,5 +1,6 @@
 package com.al7afez.al7afez.service;
 
+import com.al7afez.al7afez.infra.Messages;
 import com.al7afez.al7afez.infra.ObjectChecker;
 import com.al7afez.al7afez.model.entities.MasterFile;
 import org.springframework.http.HttpStatus;
@@ -11,7 +12,7 @@ public abstract class AbsMasterFileService<E extends MasterFile> extends BaseSer
         if (entity == null) return;
         super.isValidForCommit(entity);
         if (ObjectChecker.isEmptyOrNull(entity.getName()))
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Name is required");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, Messages.get("error.name.required"));
 
     }
 }

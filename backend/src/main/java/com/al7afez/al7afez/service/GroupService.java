@@ -2,6 +2,7 @@ package com.al7afez.al7afez.service;
 
 import com.al7afez.al7afez.dto.GroupRequest;
 import com.al7afez.al7afez.dto.GroupResponse;
+import com.al7afez.al7afez.infra.Messages;
 import com.al7afez.al7afez.infra.ObjectChecker;
 import com.al7afez.al7afez.infra.SecurityService;
 import com.al7afez.al7afez.model.entities.RecitationGroup;
@@ -48,7 +49,7 @@ public class GroupService extends AbsMasterFileService<RecitationGroup> {
                 .map(s -> s.getCode() != null ? s.getCode() : s.getName())
                 .collect(Collectors.joining(", "));
         throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                "Cannot delete group: it is referenced by the following students: " + codes);
+                Messages.get("error.group.hasStudents", codes));
     }
 
     public Page<GroupResponse> getAll(Pageable pageable) {
@@ -60,7 +61,7 @@ public class GroupService extends AbsMasterFileService<RecitationGroup> {
 
     public GroupResponse getById(Long id) {
         RecitationGroup group = groupRepository.findByIdWithDetails(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.get("error.group.notFound")));
         return mappingService.toGroupResponse(group);
     }
 
@@ -73,7 +74,7 @@ public class GroupService extends AbsMasterFileService<RecitationGroup> {
 
     public GroupResponse update(Long id, GroupRequest request) {
         RecitationGroup group = groupRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.get("error.group.notFound")));
         mappingService.toRecitationGroup(group, request);
         RecitationGroup saved = save(group, groupRepository);
         return mappingService.toGroupResponse(saved);
@@ -81,7 +82,7 @@ public class GroupService extends AbsMasterFileService<RecitationGroup> {
 
     public void delete(Long id) {
         RecitationGroup group = groupRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Group not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, Messages.get("error.group.notFound")));
         isValidForDelete(group);
         groupRepository.delete(group);
     }

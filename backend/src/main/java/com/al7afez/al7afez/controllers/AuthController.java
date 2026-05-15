@@ -3,6 +3,7 @@ package com.al7afez.al7afez.controllers;
 import com.al7afez.al7afez.dto.LoginRequest;
 import com.al7afez.al7afez.dto.LoginResponse;
 import com.al7afez.al7afez.infra.JwtUtil;
+import com.al7afez.al7afez.infra.Messages;
 import com.al7afez.al7afez.model.entities.AppUser;
 import com.al7afez.al7afez.repositories.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,7 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(request.username(), request.password())
             );
         } catch (AuthenticationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid username or password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, Messages.get("error.auth.invalidCredentials"));
         }
         AppUser user = userRepository.findByUsername(request.username()).orElseThrow();
         return new LoginResponse(
